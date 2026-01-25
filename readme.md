@@ -2,15 +2,6 @@
 
 A meticulously crafted Neovim configuration optimized for C++ and Python development. This setup provides a clean, efficient editing experience while maintaining excellent performance - designed specifically for developers who value minimal, high-quality tooling.
 
-## License
-
-Licensed under Apache 2.0:
-
-- Commercial use permitted
-- Modification allowed
-- Patent protection included
-- Private use supported
-
 ## Installation Guide
 
 ### Prerequisites
@@ -53,9 +44,6 @@ For native Windows:
 - Or use a package manager:
 
   ```powershell
-  # Chocolatey
-  choco install neovim
-
   # Scoop
   scoop install neovim
   ```
