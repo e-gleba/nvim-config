@@ -20,8 +20,10 @@ vim.g.lazyvim_python_lsp = 'basedpyright'
 -- Set to "ruff_lsp" to use the old LSP implementation version.
 vim.g.lazyvim_python_ruff = 'ruff'
 
-if vim.fn.has('win32') == 1 then
-    LazyVim.terminal.setup('pwsh')
+if vim.loop.os_uname().sysname == 'Windows_NT' then
+    vim.opt.shell = 'pwsh'
+    vim.opt.shellcmdflag =
+        '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command'
 end
 
 vim.opt.signcolumn = 'no'
