@@ -9,6 +9,7 @@ vim.opt.fileencoding = 'utf-8'
 
 vim.opt.textwidth = 80
 vim.opt.wrap = false
+vim.opt.shiftwidth = 4
 
 -- LSP Server to use for Python.
 -- Set to "basedpyright" to use basedpyright instead of pyright.
