@@ -1,15 +1,4 @@
 return {
-    {
-        'LazyVim/LazyVim',
-        opts = {
-            colorscheme = 'catppuccin',
-        },
-    },
-    {
-        'catppuccin/nvim',
-        name = 'catppuccin',
-        opts = {
-            flavour = 'latte',
-        },
-    },
+    { 'folke/tokyonight.nvim', enabled = false },
+    { 'LazyVim/LazyVim', opts = { colorscheme = 'habamax' } },
 }
