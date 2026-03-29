@@ -131,6 +131,7 @@ local function bind(keys)
     end
 end
 
+--[[
 bind({
     -- general
     ['<leader>sG'] = { 'google', 'search google' },
@@ -148,6 +149,7 @@ bind({
     ['<leader>sB'] = { 'boost', 'search boost' },
     ['<leader>sC'] = { 'cmake_docs', 'search cmake docs' },
 })
+--]]
 
 vim.keymap.set('n', '<leader>sW', function()
     M.pick(false)
