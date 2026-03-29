@@ -4,6 +4,7 @@ local M = {}
 
 ---@type table<string, {url: string, name: string}>
 M.engines = {
+    -- general
     google = {
         url = 'https://www.google.com/search?q=%s',
         name = 'google',
@@ -16,22 +17,65 @@ M.engines = {
         url = 'https://you.com/search?q=%s&fromSearchBar=true',
         name = 'you.com',
     },
+
+    -- code
     github = {
         url = 'https://github.com/search?q=%s&type=code',
-        name = 'github',
+        name = 'github code',
     },
     stackoverflow = {
         url = 'https://stackoverflow.com/search?q=%s',
         name = 'stackoverflow',
     },
+
+    -- c++ reference
     cppreference = {
         url = 'https://en.cppreference.com/mwiki/index.php?search=%s',
         name = 'cppreference',
     },
-    duckduckgo = {
-        url = 'https://duckduckgo.com/?q=%s',
-        name = 'duckduckgo',
+    cppdraft = {
+        url = 'https://eel.is/c++draft/%s',
+        name = 'c++ draft (eel.is)',
     },
+    cppstd = {
+        url = 'https://www.google.com/search?q=site:open-std.org+%s',
+        name = 'open-std.org',
+    },
+
+    -- c++ tools
+    godbolt = {
+        url = "https://godbolt.org/#g:!((g:!((g:!((h:codeEditor,i:(filename:'1',fontScale:14,fontUsePx:'0',j:1,lang:c%%2B%%2B,selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:''),l:'5',n:'1',o:'C%%2B%%2B+source+%%231',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0'),(g:!((h:compiler,i:(compiler:clang_trunk,filters:(b:'0',binary:'1',binaryObject:'1',commentOnly:'0',debugCalls:'1',demangle:'0',directives:'0',execute:'0',intel:'0',libraryCode:'0',trim:'1'),flagsViewOpen:'1',fontScale:14,fontUsePx:'0',j:1,lang:c%%2B%%2B,libs:!(),options:'-std%%3Dc%%2B%%2B23+-O2',overrides:!(),selection:(endColumn:1,endLineNumber:1,positionColumn:1,positionLineNumber:1,selectionStartColumn:1,selectionStartLineNumber:1,startColumn:1,startLineNumber:1),source:1),l:'5',n:'0',o:'+x86-64+clang+(trunk)+(Editor+%%231)',t:'0')),k:50,l:'4',n:'0',o:'',s:0,t:'0')),l:'2',n:'0',o:'',t:'0')),version:4",
+        name = 'compiler explorer',
+    },
+    quickbench = {
+        url = 'https://quick-bench.com/',
+        name = 'quick-bench',
+    },
+
+    -- c++ community / news
+    cppstories = {
+        url = 'https://www.google.com/search?q=site:cppstories.com+%s',
+        name = 'c++ stories',
+    },
+    cppweekly = {
+        url = 'https://www.google.com/search?q=site:youtube.com+%%22c%%2B%%2B+weekly%%22+jason+turner+%s',
+        name = 'c++ weekly',
+    },
+
+    -- cmake
+    cmake_docs = {
+        url = 'https://cmake.org/cmake/help/latest/search.html?q=%s',
+        name = 'cmake docs',
+    },
+
+    -- boost
+    boost = {
+        url = 'https://www.google.com/search?q=site:boost.org+%s',
+        name = 'boost docs',
+    },
+
+    -- rust (crates)
+    crates = { url = 'https://crates.io/search?q=%s', name = 'crates.io' },
 }
 
 ---@param s string
@@ -94,50 +138,45 @@ function M.pick(mode)
     end)
 end
 
-local map = vim.keymap.set
+---@param keys table<string, {[1]: string, [2]: string}>
+local function bind(keys)
+    for key, def in pairs(keys) do
+        local engine, desc = def[1], def[2]
+        vim.keymap.set('n', key, function()
+            M.search(engine)
+        end, { desc = desc .. ' (yank)' })
+        vim.keymap.set('x', key, function()
+            M.search(engine, 'v')
+        end, { desc = desc })
+    end
+end
 
-map('n', '<leader>sG', function()
-    M.search('google')
-end, { desc = 'search google (yank)' })
-map('n', '<leader>sP', function()
-    M.search('perplexity')
-end, { desc = 'search perplexity (yank)' })
-map('n', '<leader>sY', function()
-    M.search('you')
-end, { desc = 'search you.com (yank)' })
-map('n', '<leader>sR', function()
-    M.search('cppreference')
-end, { desc = 'search cppreference (yank)' })
-map('n', '<leader>sO', function()
-    M.search('stackoverflow')
-end, { desc = 'search stackoverflow (yank)' })
-map('n', '<leader>sH', function()
-    M.search('github')
-end, { desc = 'search github (yank)' })
-map('n', '<leader>sW', function()
+bind({
+    -- general
+    ['<leader>sG'] = { 'google', 'search google' },
+    ['<leader>sP'] = { 'perplexity', 'search perplexity' },
+    ['<leader>sY'] = { 'you', 'search you.com' },
+
+    -- code
+    ['<leader>sH'] = { 'github', 'search github' },
+    ['<leader>sO'] = { 'stackoverflow', 'search stackoverflow' },
+
+    -- c++
+    ['<leader>sR'] = { 'cppreference', 'search cppreference' },
+    ['<leader>sD'] = { 'cppdraft', 'search c++ draft' },
+    ['<leader>sS'] = { 'cppstd', 'search open-std' },
+    ['<leader>sB'] = { 'boost', 'search boost' },
+    ['<leader>sC'] = { 'cmake_docs', 'search cmake docs' },
+
+    -- tools (no query — just opens)
+    ['<leader>sE'] = { 'godbolt', 'compiler explorer' },
+})
+
+vim.keymap.set('n', '<leader>sW', function()
     M.pick('n')
-end, { desc = 'web search (pick engine)' })
-
-map('x', '<leader>sG', function()
-    M.search('google', 'v')
-end, { desc = 'search google' })
-map('x', '<leader>sP', function()
-    M.search('perplexity', 'v')
-end, { desc = 'search perplexity' })
-map('x', '<leader>sY', function()
-    M.search('you', 'v')
-end, { desc = 'search you.com' })
-map('x', '<leader>sR', function()
-    M.search('cppreference', 'v')
-end, { desc = 'search cppreference' })
-map('x', '<leader>sO', function()
-    M.search('stackoverflow', 'v')
-end, { desc = 'search stackoverflow' })
-map('x', '<leader>sH', function()
-    M.search('github', 'v')
-end, { desc = 'search github' })
-map('x', '<leader>sW', function()
+end, { desc = 'web search (pick)' })
+vim.keymap.set('x', '<leader>sW', function()
     M.pick('v')
-end, { desc = 'web search (pick engine)' })
+end, { desc = 'web search (pick)' })
 
 return M
