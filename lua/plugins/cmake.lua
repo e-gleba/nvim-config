@@ -2,19 +2,6 @@
 return {
     {
         'Civitasv/cmake-tools.nvim',
-        ---@type CMakeToolsSettings
-        opts = {
-            cmake_soft_link_compile_commands = true,
-            cmake_compile_commands_from_lsp = false,
-            cmake_executor = {
-                name = 'quickfix',
-                opts = { show = 'only_on_error' },
-            },
-            cmake_runner = {
-                name = 'toggleterm',
-                opts = { direction = 'horizontal', close_on_exit = false },
-            },
-        },
         keys = {
             {
                 '<leader>ckg',
@@ -46,7 +33,6 @@ return {
                 '<cmd>CMakeStop<cr>',
                 desc = 'cmake stop',
             },
-
             {
                 '<leader>ckp',
                 '<cmd>CMakeSelectConfigurePreset<cr>',
@@ -77,7 +63,6 @@ return {
                 '<cmd>CMakeSelectKit<cr>',
                 desc = 'cmake kit',
             },
-
             {
                 '<leader>cko',
                 '<cmd>CMakeOpen<cr>',

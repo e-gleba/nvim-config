@@ -1,6 +1,14 @@
 ---@type LazyPluginSpec[]
 return {
     {
+        'p00f/clangd_extensions.nvim',
+        lazy = true,
+        opts = {
+            memory_usage = { border = 'rounded' },
+            symbol_info = { border = 'rounded' },
+        },
+    },
+    {
         'neovim/nvim-lspconfig',
         opts = {
             servers = {
