@@ -16,83 +16,80 @@ return {
             },
         },
         keys = {
-            -- generate / build / run
             {
-                '<leader>cg',
+                '<leader>ckg',
                 '<cmd>CMakeGenerate<cr>',
                 desc = 'cmake generate',
             },
             {
-                '<leader>cb',
+                '<leader>ckb',
                 '<cmd>CMakeBuild<cr>',
                 desc = 'cmake build',
             },
             {
-                '<leader>cr',
+                '<leader>ckr',
                 '<cmd>CMakeRun<cr>',
                 desc = 'cmake run',
             },
             {
-                '<leader>cd',
+                '<leader>ckd',
                 '<cmd>CMakeDebug<cr>',
                 desc = 'cmake debug',
             },
             {
-                '<leader>cc',
+                '<leader>ckc',
                 '<cmd>CMakeClean<cr>',
                 desc = 'cmake clean',
             },
             {
-                '<leader>cx',
+                '<leader>ckx',
                 '<cmd>CMakeStop<cr>',
                 desc = 'cmake stop',
             },
 
-            -- presets & targets
             {
-                '<leader>cp',
+                '<leader>ckp',
                 '<cmd>CMakeSelectConfigurePreset<cr>',
                 desc = 'cmake configure preset',
             },
             {
-                '<leader>cP',
+                '<leader>ckP',
                 '<cmd>CMakeSelectBuildPreset<cr>',
                 desc = 'cmake build preset',
             },
             {
-                '<leader>ct',
+                '<leader>ckt',
                 '<cmd>CMakeSelectBuildTarget<cr>',
                 desc = 'cmake build target',
             },
             {
-                '<leader>cl',
+                '<leader>ckl',
                 '<cmd>CMakeSelectLaunchTarget<cr>',
                 desc = 'cmake launch target',
             },
             {
-                '<leader>cv',
+                '<leader>ckv',
                 '<cmd>CMakeSelectBuildType<cr>',
-                desc = 'cmake variant (Debug/Release)',
+                desc = 'cmake variant',
             },
             {
-                '<leader>ck',
+                '<leader>ckk',
                 '<cmd>CMakeSelectKit<cr>',
-                desc = 'cmake kit (compiler)',
+                desc = 'cmake kit',
             },
 
-            -- quick access
             {
-                '<leader>co',
+                '<leader>cko',
                 '<cmd>CMakeOpen<cr>',
                 desc = 'cmake open runner',
             },
             {
-                '<leader>cq',
+                '<leader>ckq',
                 '<cmd>CMakeClose<cr>',
                 desc = 'cmake close runner',
             },
             {
-                '<leader>cs',
+                '<leader>cks',
                 '<cmd>CMakeSettings<cr>',
                 desc = 'cmake settings',
             },
