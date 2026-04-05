@@ -60,8 +60,6 @@ return {
     },
 
     config = function(_, opts)
-        -- Runtime validation gate. Throws immediately on bad config.
-        validate(opts)
         require('android').setup(opts)
     end,
 }
