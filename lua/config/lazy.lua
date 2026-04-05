@@ -34,7 +34,6 @@ require('lazy').setup({
         { import = 'lazyvim.plugins.extras.lang.clangd' },
         { import = 'lazyvim.plugins.extras.lang.tex' },
         { import = 'lazyvim.plugins.extras.dap.core' },
-        { import = 'lazyvim.plugins.extras.editor.fzf' },
         -- import/override with your plugins
         { import = 'plugins' },
     },
