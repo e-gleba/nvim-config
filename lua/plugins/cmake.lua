@@ -80,4 +80,17 @@ return {
             },
         },
     },
+    {
+        'folke/which-key.nvim',
+        opts = {
+            spec = {
+                { '<leader>c', group = 'code' },
+                {
+                    '<leader>ck',
+                    group = 'CMake',
+                    icon = { icon = '⚙', color = 'cyan' },
+                },
+            },
+        },
+    },
 }
