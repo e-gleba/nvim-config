@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    "runtime": {
+        "version": "LuaJIT"
+    },
+    "workspace": {
+        "library": [
+            "${3rd}/luv/library",
+            "~/.local/share/nvim/lazy",
+            "~/AppData/Local/nvim-data/lazy"
+        ],
+        "checkThirdParty": false
+    },
+    "diagnostics": {
+        "globals": [
+            "vim"
+        ],
+        "severity": {
+            "missing-fields": "Warning"
+        }
+    },
+    "type": {
+        "castNumberToInteger": true
+    }
+}

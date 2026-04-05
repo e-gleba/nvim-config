@@ -1,24 +1,52 @@
-# StyLua Configuration
-# Syntax specification for Lua version (All, Lua51, Lua52, Lua53, Lua54, LuaJIT, Luau, CfxLua)
+# StyLua — Lua formatter configuration.
+# Docs: https://github.com/JohnnyMorganz/StyLua#options
+# Schema above enables validation + completion in Taplo (TOML LSP).
+#
+# To verify: stylua --check .
+# To format: stylua .
+
+# Target every Lua syntax variant so the formatter never rejects valid code
+# across Neovim (LuaJIT), plugin specs, and test files.
+# Options: All, Lua51, Lua52, Lua53, Lua54, LuaJIT, Luau, CfxLua
 syntax = "All"
 
-# Formatting constraints
+# Hard wrap threshold. 80 matches POSIX terminal width and keeps diffs tight.
+# For wider terminals, 100 is a common alternative.
 column_width = 80
+
+# LF only. Prevents mixed-EOL issues on cross-platform teams and in CI.
+# Options: Unix, Windows
 line_endings = "Unix"
+
+# Spaces over tabs for deterministic alignment in every renderer.
+# Options: Tabs, Spaces
 indent_type = "Spaces"
+
+# 4-space indent for visual clarity in nested Lua tables.
+# Note: LazyVim upstream uses 2. Adjust if you want ecosystem parity.
 indent_width = 4
 
-# String formatting preferences
+# Prefer single quotes, auto-switch to double when the string contains
+# a single quote to avoid escaping.
+# Options: AutoPreferDouble, AutoPreferSingle, ForceDouble, ForceSingle
 quote_style = "AutoPreferSingle"
 
-# Function call formatting
+# Always emit parentheses on function calls, including single-arg string
+# and table calls. Prevents ambiguity in chained expressions.
+# Options: Always, NoSingleString, NoSingleTable, None, Input
 call_parentheses = "Always"
+
+# No space between `function` keyword and opening paren.
+# `function()` not `function ()`.
+# Options: Never, Definitions, Calls, Always
 space_after_function_names = "Never"
 
-# Code structure
+# Never collapse if/return/assignment onto a single line.
+# Every branch and statement gets its own line for consistent diffability.
+# Options: Never, FunctionOnly, ConditionalOnly, Always
 collapse_simple_statement = "Never"
 
-# Module organization
+# Auto-sort `require()` calls alphabetically within contiguous blocks.
+# Keeps plugin imports and module requires deterministic.
 [sort_requires]
 enabled = true
-
