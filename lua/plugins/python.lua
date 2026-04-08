@@ -1,22 +1,21 @@
--- PyCharm-like Python + uv experience
--- Prerequisites: uv (https://docs.astral.sh/uv), fd
+---@type table<string, true>
+local LSP_TRIGGERS = { sync = true, add = true, remove = true }
+
+---@param msg string
+---@param level? integer
+local function notify(msg, level)
+    vim.notify(msg, level or vim.log.levels.INFO, { title = 'uv' })
+end
 
 ---@param cmd string[]
 ---@param on_ok fun(out: vim.SystemCompleted)
-local function uv_run(cmd, on_ok)
-    local full = vim.list_extend({ 'uv' }, cmd)
-    vim.notify(
-        'Running: ' .. table.concat(full, ' '),
-        vim.log.levels.INFO,
-        { title = 'uv' }
-    )
-    vim.system(full, { text = true }, function(out)
+local function uv(cmd, on_ok)
+    vim.system({ 'uv', unpack(cmd) }, { text = true }, function(out)
         vim.schedule(function()
             if out.code ~= 0 then
-                vim.notify(
+                notify(
                     vim.trim(out.stderr ~= '' and out.stderr or out.stdout),
-                    vim.log.levels.ERROR,
-                    { title = 'uv' }
+                    vim.log.levels.ERROR
                 )
             else
                 on_ok(out)
@@ -25,80 +24,68 @@ local function uv_run(cmd, on_ok)
     end)
 end
 
---- PyCharm-style: pick a Python version → uv creates .venv with it
-local function select_python_and_create_venv()
-    uv_run({ 'python', 'list' }, function(out)
-        local versions = {} ---@type {version: string, path: string, installed: boolean}[]
-        for line in out.stdout:gmatch('[^\r\n]+') do
-            -- e.g. "cpython-3.12.7-linux-x86_64-gnu    /home/user/.local/share/uv/python/cpython-3.12.7/bin/python3"
-            --   or "cpython-3.11.10-linux-x86_64-gnu    <download available>"
-            local id, rest = line:match('^(%S+)%s+(.+)$')
-            if id then
-                local ver = id:match('cpython%-([%d%.]+)') or id
-                local installed = not rest:match('<download available>')
-                table.insert(
-                    versions,
-                    { version = ver, path = rest, installed = installed }
-                )
-            end
-        end
+local function select_python()
+    uv({ 'python', 'list' }, function(out)
+        ---@type { version: string, installed: boolean }[]
+        local versions = vim.iter(
+            vim.split(out.stdout, '\n', { trimempty = true })
+        )
+            :map(function(line)
+                local id, rest = line:match('^(%S+)%s+(.+)$')
+                if not id then
+                    return
+                end
+                return {
+                    version = id:match('cpython%-([%d%.]+)') or id,
+                    installed = not rest:match('<download available>'),
+                }
+            end)
+            :totable()
 
         if #versions == 0 then
-            vim.notify(
-                'No Python versions found. Run `uv python list` to check.',
-                vim.log.levels.WARN,
-                { title = 'uv' }
+            return notify(
+                'No Python versions found — run `uv python list`',
+                vim.log.levels.WARN
             )
-            return
         end
 
         vim.ui.select(versions, {
-            prompt = ' Select Python version (uv will download if needed):',
-            format_item = function(item)
-                local marker = item.installed and '● installed'
-                    or '○ download'
-                return (' Python %s  [%s]'):format(item.version, marker)
+            prompt = 'Select Python version:',
+            ---@param v { version: string, installed: boolean }
+            format_item = function(v)
+                return ('%s %s  [%s]'):format(
+                    v.installed and '●' or '○',
+                    v.version,
+                    v.installed and 'installed' or 'download'
+                )
             end,
         }, function(choice)
             if not choice then
                 return
             end
-            uv_run({ 'venv', '--python', choice.version }, function()
-                vim.notify(
-                    ('✓ Venv created with Python %s\nRestarting LSP…'):format(
-                        choice.version
-                    ),
-                    vim.log.levels.INFO,
-                    { title = 'uv' }
-                )
+            uv({ 'venv', '--python', choice.version }, function()
+                notify(('Venv created — Python %s'):format(choice.version))
                 vim.cmd('LspRestart')
             end)
         end)
     end)
 end
 
---- Prompt-based uv command helper
 ---@param subcmd string[]
 ---@param msg string
 ---@param prompt? string
-local function uv_action(subcmd, msg, prompt)
+---@return fun()
+local function action(subcmd, msg, prompt)
     return function()
+        ---@param input? string
         local function exec(input)
             local cmd = vim.deepcopy(subcmd)
             if input then
-                table.insert(cmd, input)
+                cmd[#cmd + 1] = input
             end
-            uv_run(cmd, function()
-                vim.notify(
-                    msg:format(input or ''),
-                    vim.log.levels.INFO,
-                    { title = 'uv' }
-                )
-                if
-                    subcmd[1] == 'sync'
-                    or subcmd[1] == 'add'
-                    or subcmd[1] == 'remove'
-                then
+            uv(cmd, function()
+                notify(msg:format(input or ''))
+                if LSP_TRIGGERS[subcmd[1]] then
                     vim.cmd('LspRestart')
                 end
             end)
@@ -117,14 +104,15 @@ end
 
 ---@type LazyPluginSpec[]
 return {
-    -- ── venv-selector: discover uv venvs ──────────────────────────────
     {
         'linux-cultist/venv-selector.nvim',
+        ft = 'python',
+        cmd = 'VenvSelect',
         opts = {
             settings = {
                 search = {
                     project_venv = {
-                        command = (vim.fn.has('win32') == 1)
+                        command = jit.os == 'Windows'
                                 and 'fd python.exe$ .venv --full-path --color never -IH -a'
                             or 'fd python$ .venv --full-path --color never -IH -a',
                     },
@@ -133,11 +121,8 @@ return {
             },
         },
     },
-
-    -- ── Which-Key group ────────────────────────────────────────────────
     {
         'folke/which-key.nvim',
-        optional = true,
         opts = {
             spec = {
                 {
@@ -148,23 +133,58 @@ return {
             },
         },
     },
-
-  -- ── uv workflow keymaps ────────────────────────────────────────────
-  -- stylua: ignore
-  {
-    name = "uv-workflow",
-    dir = vim.fn.stdpath("config"),
-    keys = {
-      -- ★ The PyCharm-style version picker
-      { "<leader>cUp", select_python_and_create_venv,                                          desc = "Select Python & Create Venv", ft = "python" },
-      -- Project
-      { "<leader>cUi", uv_action({ "init" },            "Project initialized ✓"),              desc = "Init Project",   ft = "python" },
-      { "<leader>cUc", uv_action({ "venv" },             "Venv created ✓"),                    desc = "Create Venv",    ft = "python" },
-      -- Dependencies
-      { "<leader>cUa", uv_action({ "add" },              "Added: %s ✓",          "Package: "), desc = "Add Package",    ft = "python" },
-      { "<leader>cUr", uv_action({ "remove" },           "Removed: %s ✓",        "Package: "), desc = "Remove Package", ft = "python" },
-      { "<leader>cUs", uv_action({ "sync" },             "Dependencies synced ✓"),             desc = "Sync Deps",      ft = "python" },
-      { "<leader>cUl", uv_action({ "lock" },             "Lockfile updated ✓"),                desc = "Update Lock",    ft = "python" },
+    {
+        name = 'uv-workflow',
+        dir = vim.fn.stdpath('config'),
+        keys = {
+            {
+                '<leader>cUp',
+                select_python,
+                desc = 'UV: Python → Venv',
+                ft = 'python',
+            },
+            {
+                '<leader>cUi',
+                action({ 'init' }, 'Project initialized'),
+                desc = 'UV: Init',
+                ft = 'python',
+            },
+            {
+                '<leader>cUc',
+                action({ 'venv' }, 'Venv created'),
+                desc = 'UV: Create Venv',
+                ft = 'python',
+            },
+            {
+                '<leader>cUa',
+                action({ 'add' }, 'Added %s', 'Package: '),
+                desc = 'UV: Add Package',
+                ft = 'python',
+            },
+            {
+                '<leader>cUr',
+                action({ 'remove' }, 'Removed %s', 'Package: '),
+                desc = 'UV: Remove Package',
+                ft = 'python',
+            },
+            {
+                '<leader>cUs',
+                action({ 'sync' }, 'Synced'),
+                desc = 'UV: Sync',
+                ft = 'python',
+            },
+            {
+                '<leader>cUl',
+                action({ 'lock' }, 'Lockfile updated'),
+                desc = 'UV: Lock',
+                ft = 'python',
+            },
+            {
+                '<leader>cUv',
+                '<cmd>VenvSelect<cr>',
+                desc = 'UV: Select Venv',
+                ft = 'python',
+            },
+        },
     },
-  },
 }

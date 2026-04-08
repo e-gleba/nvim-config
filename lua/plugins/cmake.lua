@@ -1,90 +1,45 @@
+---@type string[][] -- { suffix, command, label }
+local mappings = {
+    { 'g', 'CMakeGenerate', 'Generate' },
+    { 'b', 'CMakeBuild', 'Build' },
+    { 'r', 'CMakeRun', 'Run' },
+    { 'd', 'CMakeDebug', 'Debug' },
+    { 'c', 'CMakeClean', 'Clean' },
+    { 'x', 'CMakeStop', 'Stop' },
+    { 'p', 'CMakeSelectConfigurePreset', 'Configure Preset' },
+    { 'P', 'CMakeSelectBuildPreset', 'Build Preset' },
+    { 't', 'CMakeSelectBuildTarget', 'Build Target' },
+    { 'l', 'CMakeSelectLaunchTarget', 'Launch Target' },
+    { 'v', 'CMakeSelectBuildType', 'Variant' },
+    { 'k', 'CMakeSelectKit', 'Kit' },
+    { 'o', 'CMakeOpen', 'Open Runner' },
+    { 'q', 'CMakeClose', 'Close Runner' },
+    { 's', 'CMakeSettings', 'Settings' },
+}
+
+---@type LazyKeysSpec[]
+local keys = vim.iter(mappings)
+    :map(function(m)
+        ---@type LazyKeysSpec
+        return {
+            '<leader>ck' .. m[1],
+            '<cmd>' .. m[2] .. '<cr>',
+            desc = 'CMake: ' .. m[3],
+        }
+    end)
+    :totable()
+
 ---@type LazyPluginSpec[]
 return {
     {
         'Civitasv/cmake-tools.nvim',
-        keys = {
-            {
-                '<leader>ckg',
-                '<cmd>CMakeGenerate<cr>',
-                desc = 'cmake generate',
-            },
-            {
-                '<leader>ckb',
-                '<cmd>CMakeBuild<cr>',
-                desc = 'cmake build',
-            },
-            {
-                '<leader>ckr',
-                '<cmd>CMakeRun<cr>',
-                desc = 'cmake run',
-            },
-            {
-                '<leader>ckd',
-                '<cmd>CMakeDebug<cr>',
-                desc = 'cmake debug',
-            },
-            {
-                '<leader>ckc',
-                '<cmd>CMakeClean<cr>',
-                desc = 'cmake clean',
-            },
-            {
-                '<leader>ckx',
-                '<cmd>CMakeStop<cr>',
-                desc = 'cmake stop',
-            },
-            {
-                '<leader>ckp',
-                '<cmd>CMakeSelectConfigurePreset<cr>',
-                desc = 'cmake configure preset',
-            },
-            {
-                '<leader>ckP',
-                '<cmd>CMakeSelectBuildPreset<cr>',
-                desc = 'cmake build preset',
-            },
-            {
-                '<leader>ckt',
-                '<cmd>CMakeSelectBuildTarget<cr>',
-                desc = 'cmake build target',
-            },
-            {
-                '<leader>ckl',
-                '<cmd>CMakeSelectLaunchTarget<cr>',
-                desc = 'cmake launch target',
-            },
-            {
-                '<leader>ckv',
-                '<cmd>CMakeSelectBuildType<cr>',
-                desc = 'cmake variant',
-            },
-            {
-                '<leader>ckk',
-                '<cmd>CMakeSelectKit<cr>',
-                desc = 'cmake kit',
-            },
-            {
-                '<leader>cko',
-                '<cmd>CMakeOpen<cr>',
-                desc = 'cmake open runner',
-            },
-            {
-                '<leader>ckq',
-                '<cmd>CMakeClose<cr>',
-                desc = 'cmake close runner',
-            },
-            {
-                '<leader>cks',
-                '<cmd>CMakeSettings<cr>',
-                desc = 'cmake settings',
-            },
-        },
+        keys = keys,
+        opts = {},
     },
     {
         'folke/which-key.nvim',
         opts = {
             spec = {
-                { '<leader>c', group = 'code' },
                 {
                     '<leader>ck',
                     group = 'CMake',

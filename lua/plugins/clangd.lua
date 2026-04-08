@@ -1,8 +1,10 @@
+---@type integer
+local nproc = #vim.uv.cpu_info()
+
 ---@type LazyPluginSpec[]
 return {
     {
-        url = 'https://git.sr.ht/~chinmay/clangd_extensions.nvim',
-        name = 'clangd_extensions.nvim',
+        'dchinmay2/clangd_extensions.nvim',
         lazy = true,
         opts = {
             memory_usage = { border = 'rounded' },
@@ -25,9 +27,10 @@ return {
                         '--pch-storage=memory',
                         '--all-scopes-completion',
                         '--header-insertion-decorators',
+                        '--enable-config',
                         '--limit-references=200',
                         '--limit-results=30',
-                        '-j=' .. tostring(#vim.uv.cpu_info()),
+                        '-j=' .. tostring(nproc),
                     },
                     init_options = {
                         usePlaceholders = true,
@@ -35,6 +38,12 @@ return {
                         clangdFileStatus = true,
                     },
                 },
+            },
+            setup = {
+                ---@return boolean|nil
+                clangd = function()
+                    require('clangd_extensions').setup()
+                end,
             },
         },
     },
