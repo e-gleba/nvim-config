@@ -2,7 +2,7 @@
 return {
     {
         'iamironz/android-nvim-plugin',
-        lazy = false,
+        lazy = true,
         config = function()
             ---@type android.Opts
             require('android').setup({
