@@ -29,10 +29,11 @@ opt.expandtab = true
 opt.wrap = false
 
 -- Gutter
--- Hide the sign column entirely. Diagnostics are surfaced through
--- virtual text and underlines instead of gutter icons. This reclaims
--- 2-3 columns of horizontal space on every window.
-opt.signcolumn = 'no'
+-- Enable the signcolumn so LSP diagnostics, gitsigns changes, and DAP
+-- breakpoints are visible in the left gutter. Hiding it saves 2 columns
+-- but breaks the IDE experience (you cannot see where errors or breakpoints
+-- live without opening the line). See: https://neovim.io/doc/user/options.html#'signcolumn'
+opt.signcolumn = 'yes:2'
 
 -- Python Tooling
 -- LazyVim reads these globals to decide which LSP and linter to
