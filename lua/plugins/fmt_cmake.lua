@@ -17,8 +17,8 @@ return {
                 -- clang-format is the LLVM/Clang project's official C/C++ formatter.
                 -- It uses a .clang-format file in your repo root for style rules.
                 -- https://clang.llvm.org/docs/ClangFormat.html
-                c = { "clang_format" },
-                cpp = { "clang_format" },
+                c = { "clang-format" },
+                cpp = { "clang-format" },
             },
         },
     },
