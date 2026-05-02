@@ -236,7 +236,7 @@ open build/MyProject.xcodeproj
 | Symbol outline | `aerial.nvim` (LazyVim extra) | Toggle `<leader>cs` |
 | Git diff | `diffview.nvim` (LazyVim extra) | Open `<leader>gd` |
 | Rename preview | `inc-rename.nvim` (LazyVim extra) | `<leader>cr` (live preview) |
-| Web search | `browse.nvim` (Google, cppreference, StackOverflow, Perplexity…) | `:Browse input` |
+| Web search | `browse.nvim` | `<leader>sG` Google, `<leader>sH` GitHub, `<leader>sO` StackOverflow, `<leader>sR` cppreference, `<leader>sW` picker |
 
 ## C++ Workflow Tips
 
