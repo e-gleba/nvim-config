@@ -7,7 +7,7 @@
 
 return {
     {
-        "folke/snacks.nvim",
+        'folke/snacks.nvim',
         priority = 1000,
         lazy = false,
 
@@ -25,8 +25,7 @@ return {
             -- Smooth scrolling is the #1 source of UI jank in big files.
             scroll = { enabled = false },
 
-            -- Not relevant for C++ / terminal workflow.
-            image = { enabled = false },
+            image = { enabled = true },
             zen = { enabled = false },
 
             -- Explicitly enabled IDE features -------------------------------------
