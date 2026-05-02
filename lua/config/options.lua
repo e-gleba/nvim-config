@@ -13,19 +13,24 @@ opt.fileencoding = 'utf-8'
 
 -- Line endings — force LF globally and on every buffer.
 -- On Windows Git may check out CRLF (`core.autocrlf=true`), and the
--- cmake-language-server (or any LSP reading from disk) will see `\r\n`.
--- Four layers of defense:
---   1. `fileformats` — auto-detection order prefers unix over dos.
---   2. `fileformat`  — default for new empty buffers.
---   3. Autocmds      — override after read and before write so buffers are
---      always `unix` and literal `\r` is stripped before LSP sees text.
---   4. `.gitattributes` in repo root — forces Git to normalize to LF on checkout.
+-- cmake-language-server (or any LSP reading from disk) will see `\\r\\n`.
+-- Five layers of defense:
+--   1. `.gitattributes` in repo root — forces Git to normalize to LF on checkout.
+--   2. `fileformats` — auto-detection order prefers unix over dos.
+--   3. `fileformat`  — default for new empty buffers.
+--   4. Autocmds      — override after read and before write so buffers are
+--      always `unix` and literal `\\r` is stripped before LSP sees text.
+--   5. `fixendofline` / `endofline` — ensure POSIX-compliant trailing newline.
 -- https://neovim.io/doc/user/options.html#'fileformat'
 -- https://neovim.io/doc/user/options.html#'fileformats'
+-- https://neovim.io/doc/user/options.html#'fixendofline'
+-- https://neovim.io/doc/user/options.html#'endofline'
 -- https://neovim.io/doc/user/editing.html#file-formats
 -- https://git-scm.com/docs/gitattributes#_end_of_line_conversion
 opt.fileformats = 'unix,dos' -- try unix first when reading
 opt.fileformat = 'unix'      -- default for new empty buffers
+opt.fixendofline = true      -- ensure POSIX trailing newline on write
+opt.endofline = true         -- write trailing newline
 
 local force_lf_au = vim.api.nvim_create_augroup('ForceUnixLf', { clear = true })
 
@@ -36,15 +41,14 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
     callback = function()
         -- Lock format to unix so writes produce LF only.
         vim.bo.fileformat = 'unix'
-        -- Ensure file ends with a newline (POSIX standard).
-        -- https://neovim.io/doc/user/options.html#'fixendofline'
+        -- Ensure buffer-local fixendofline is enabled.
         vim.bo.fixendofline = true
 
         -- If Git checked out CRLF and Neovim missed it (mixed-format
         -- file or `fileformats` disabled), strip literal carriage returns.
-        if vim.fn.search('\r', 'nw') > 0 then
+        if vim.fn.search('\\r', 'nw') > 0 then
             local view = vim.fn.winsaveview()
-            vim.cmd([[keeppatterns silent! %s/\r$//e]])
+            vim.cmd([[keeppatterns silent! %s/\\r$//e]])
             vim.fn.winrestview(view)
         end
     end,

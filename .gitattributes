@@ -1,23 +1,47 @@
 # Force LF for all text files so Git never converts to CRLF on checkout.
 # This prevents the cmake-language-server (and every other LSP) from seeing
-# \r\n on disk. Binary files are left untouched.
+# \\r\\n on disk. Binary files are left untouched.
 # https://git-scm.com/docs/gitattributes#_end_of_line_conversion
+
+# Auto-detect text files, but force LF when they are text.
 * text=auto eol=lf
 
+# Explicitly mark source and configuration files as text with LF.
+# This guarantees LF even if Git's auto-detection fails on a file.
+*.c     text eol=lf
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.hpp   text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+*.lua   text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.sh    text eol=lf
+*.ps1   text eol=lf
+*.py    text eol=lf
+
 # Explicitly mark common binary extensions so Git never touches them.
-*.png binary
-*.jpg binary
+*.png  binary
+*.jpg  binary
 *.jpeg binary
-*.gif binary
-*.ico binary
-*.svg binary
+*.gif  binary
+*.ico  binary
+*.svg  binary
 *.woff binary
 *.woff2 binary
-*.ttf binary
-*.eot binary
-*.pdf binary
-*.zip binary
+*.ttf  binary
+*.eot  binary
+*.pdf  binary
+*.zip  binary
 *.tar.gz binary
 *.tar.xz binary
-*.exe binary
-*.dll binary
+*.exe  binary
+*.dll  binary
+*.so   binary
+*.dylib binary
+*.a    binary
+*.lib  binary
