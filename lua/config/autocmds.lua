@@ -36,30 +36,3 @@ vim.api.nvim_create_autocmd('FileType', {
         end
     end,
 })
-
--- Clangd cache wipe and LSP restart.
---
--- clangd maintains a background index on disk (under .cache/clangd and the
--- global ~/.cache/clangd). On large codebases this cache can drift after
--- rebases, branch switches, or unity-build toggles, producing phantom
--- errors, missing symbols, or stale cross-file references. This command
--- deletes both caches and restarts the LSP — fixes 90 % of "worked
--- yesterday, broken today" clangd issues in ~2 seconds.
---
--- Usage:
---   :ClangdWipeCache
---
--- Ref: https://clangd.llvm.org/design/indexing.html
-vim.api.nvim_create_user_command('ClangdWipeCache', function()
-    local dirs = {
-        vim.loop.cwd() .. '/.cache/clangd',
-        vim.fn.expand('~/.cache/clangd'),
-    }
-    for _, d in ipairs(dirs) do
-        if vim.fn.isdirectory(d) == 1 then
-            vim.fn.delete(d, 'rf')
-        end
-    end
-    vim.cmd('LspRestart')
-    vim.notify('clangd cache wiped & LSP restarted', vim.log.levels.INFO)
-end, { desc = 'Wipe clangd index cache and restart LSP' })
