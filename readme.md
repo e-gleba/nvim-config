@@ -99,7 +99,6 @@ Neovim and LSPs require LF. Prevent Git from converting to CRLF on checkout:
 
 ```powershell
 # Global -- affects all repositories
-[Environment]::SetEnvironmentVariable("GIT_LFS_PATH", "$env:USERPROFILE\scoop\apps\git-lfs\current", "User")
 git config --global core.autocrlf false
 git config --global core.eol lf
 ```
@@ -144,6 +143,22 @@ git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\nvim
 # 3. Launch
 nvim
 ```
+
+## First Launch Diagnostics
+
+After cloning, run this headless check to verify all tools are discoverable, plugins load cleanly, and health checks pass. Catches missing binaries, network issues, or permission problems before your first interactive session.
+
+```bash
+# Headless health check with verbose logging (output includes full diagnostics)
+nvim --headless -V1 -c 'checkhealth' -c 'qa'
+
+# Or force-sync all plugins and exit (catches download / lockfile drift)
+nvim --headless "+Lazy! sync" +qa
+```
+
+Verbose logs are written to:
+- **Linux / macOS:** `~/.local/state/nvim/log`
+- **Windows:** `~/AppData/Local/nvim-data/log`
 
 ## Working with Native IDEs
 
@@ -247,7 +262,7 @@ This config uses `cmake-tools.nvim` with native CMake Presets support. Ensure yo
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `cmake-language-server` reports "invalid line endings" | CRLF on disk (Git `core.autocrlf=true`) | See [Windows Environment Variables](#windows-environment-variables) section above; re-clone with `core.autocrlf=false` |
+| `cmake-language-server` reports "invalid line endings" | CRLF on disk (Git `core.autocrlf=true`) | See [Windows Environment Variables](#windows-environment-variables) above; re-clone with `core.autocrlf=false` |
 | Neovim freezes on file reload | Neovim 0.10.x nightly bug | Use stable 0.10.x release, not HEAD. See [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581) |
 | Debug symbols load slowly on Windows | LLDB using old DIA reader | Run `[Environment]::SetEnvironmentVariable("LLDB_USE_NATIVE_PDB_READER", "1", "User")` and restart Neovim |
 | `nvim-dap-python` fails on Windows | Virtual environment not activated | Activate venv before launching Neovim. See [nvim-dap-python #118](https://github.com/mfussenegger/nvim-dap-python/issues/118) |
