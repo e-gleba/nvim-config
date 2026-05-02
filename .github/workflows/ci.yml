@@ -19,22 +19,19 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Ensure CI image
-        run: |
-          IMAGE="ghcr.io/${{ github.repository }}/nvim-ci:latest"
-          if docker pull "$IMAGE" 2>/dev/null; then
-            echo "Pulled $IMAGE"
-          else
-            echo "Registry image not found; building locally..."
-            docker build -t "$IMAGE" .
-          fi
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run stylua
         run: |
