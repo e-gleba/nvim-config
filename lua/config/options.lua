@@ -1,4 +1,4 @@
--- Options — loaded automatically before lazy.nvim startup
+-- Options -- loaded automatically before lazy.nvim startup
 -- LazyVim defaults: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- This file only contains *overrides*. Anything not set here inherits from LazyVim.
 
@@ -11,16 +11,16 @@ local is_win = vim.fn.has('win32') == 1
 -- https://neovim.io/doc/user/options.html#'fileencoding'
 opt.fileencoding = 'utf-8'
 
--- Line endings — force LF globally and on every buffer.
+-- Line endings -- force LF globally and on every buffer.
 -- On Windows Git may check out CRLF (`core.autocrlf=true`), and the
 -- cmake-language-server (or any LSP reading from disk) will see `\\r\\n`.
 -- Five layers of defense:
---   1. `.gitattributes` in repo root — forces Git to normalize to LF on checkout.
---   2. `fileformats` — auto-detection order prefers unix over dos.
---   3. `fileformat`  — default for new empty buffers.
---   4. Autocmds      — override after read and before write so buffers are
+--   1. `.gitattributes` in repo root -- forces Git to normalize to LF on checkout.
+--   2. `fileformats` -- auto-detection order prefers unix over dos.
+--   3. `fileformat`  -- default for new empty buffers.
+--   4. Autocmds      -- override after read and before write so buffers are
 --      always `unix` and literal `\\r` is stripped before LSP sees text.
---   5. `fixendofline` / `endofline` — ensure POSIX-compliant trailing newline.
+--   5. `fixendofline` / `endofline` -- ensure POSIX-compliant trailing newline.
 -- https://neovim.io/doc/user/options.html#'fileformat'
 -- https://neovim.io/doc/user/options.html#'fileformats'
 -- https://neovim.io/doc/user/options.html#'fixendofline'
@@ -91,7 +91,7 @@ opt.signcolumn = 'yes:2'
 g.lazyvim_python_lsp = 'basedpyright'
 g.lazyvim_python_ruff = 'ruff'
 
--- Windows — PowerShell as default shell
+-- Windows -- PowerShell as default shell
 -- Neovim on Windows defaults to cmd.exe. PowerShell provides POSIX-like
 -- piping and exit codes. Mirrors :help shell-powershell.
 -- https://neovim.io/doc/user/options.html#'shell'
