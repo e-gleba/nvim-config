@@ -1,166 +1,129 @@
-# LazyVim — C++ & Python IDE
+<div align="center">
 
-A fast, minimal Neovim configuration built on [LazyVim](https://lazyvim.github.io/) and [lazy.nvim](https://github.com/folke/lazy.nvim). Optimised for cross-platform C++ (CMake, `clangd`, `codelldb`) and Python (`debugpy`) development.
+# nvim-config
+
+**A fast, stable, cross-platform C++ IDE inside Neovim.**
+
+[![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)](https://neovim.io)
+[![Lua](https://img.shields.io/badge/Lua-5.1-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](license)
+[![Stars](https://img.shields.io/github/stars/e-gleba/nvim-config?style=social)](https://github.com/e-gleba/nvim-config)
+
+</div>
 
 ---
 
-## Prerequisites
+## ⚡ Philosophy
 
-| Tool | Minimum | Purpose |
+- **Fast** — zero animation, lazy-loaded everything, native LSP via `clangd`.
+- **Stable** — upstream defaults first, minimal custom wrapper surface.
+- **Cross-platform** — Windows, macOS, Linux. Android & iOS via hybrid workflow.
+- **C++ first** — CMake, `clangd`, `clang-format`, `codelldb`, Google Test.
+
+## 📦 Prerequisites
+
+| Tool | Purpose | Install |
 |------|---------|---------|
-| Neovim | 0.9.x stable | Editor |
-| Git | — | Plugin management |
-| C compiler | — | Treesitter parsers |
-| LLDB or GDB | — | C++ debugging |
-| Python | 3.8+ | Python + `debugpy` |
+| [Neovim](https://neovim.io) 0.10+ | Editor | `brew install neovim` / `winget install Neovim.Neovim` |
+| [Git](https://git-scm.com) | Plugin manager | Usually pre-installed |
+| [CMake](https://cmake.org) 3.20+ | Build system | `brew install cmake` / `winget install Kitware.CMake` |
+| [Ninja](https://ninja-build.org) | Fast generator | `brew install ninja` / `choco install ninja` |
+| C++ toolchain | Compiler + debugger | Xcode / MSVC / GCC / Clang |
 
-> **Important:** Use Neovim 0.9.x stable. Nightly builds cause freezes on file reload — see [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581).
+> **Windows Note:** `clangd` and `codelldb` are installed automatically via [Mason](https://github.com/williamboman/mason.nvim). If you see PDB errors during native debugging, enable **Edit and Continue** in Visual Studio or set the environment variable `MSVC_ENABLE_PDB=1` before launching Neovim.
 
----
+## 🚀 Quick Start
 
-## Installation
-
-### 1. Back up an existing config
-
-**Linux / macOS**
 ```bash
-mkdir -p ~/.config/nvim.bak ~/.local/share/nvim.bak \
-  ~/.local/state/nvim.bak ~/.cache/nvim.bak
-mv ~/.config/nvim ~/.config/nvim.bak/
-mv ~/.local/share/nvim ~/.local/share/nvim.bak/
-mv ~/.local/state/nvim ~/.local/state/nvim.bak/
-mv ~/.cache/nvim ~/.cache/nvim.bak/
-```
+# 1. Back up your existing config
+mv ~/.config/nvim ~/.config/nvim.bak.$(date +%s)
 
-**Windows (PowerShell)**
-```powershell
-Rename-Item -Path "$env:LOCALAPPDATA\nvim"     -NewName "$env:LOCALAPPDATA\nvim.bak"     -ErrorAction SilentlyContinue
-Rename-Item -Path "$env:LOCALAPPDATA\nvim-data" -NewName "$env:LOCALAPPDATA\nvim-data.bak" -ErrorAction SilentlyContinue
-```
-
-### 2. Clone this repository
-
-**Linux / macOS**
-```bash
+# 2. Clone
 git clone https://github.com/e-gleba/nvim-config.git ~/.config/nvim
-```
 
-**Windows (PowerShell)**
-```powershell
-git clone https://github.com/e-gleba/nvim-config.git "$env:LOCALAPPDATA\nvim"
-```
-
-### 3. Launch Neovim
-
-```bash
+# 3. Launch — plugins install automatically on first start
 nvim
 ```
 
-`lazy.nvim` bootstraps itself and installs all plugins on first start.
+## 🏗️ Structure
 
----
+```
+~/.config/nvim
+├── init.lua              -- Entry point
+├── lazy-lock.json        -- Pin exact plugin versions
+├── lua
+│   ├── config            -- Core: keymaps, options, autocmds, lazy
+│   │   ├── autocmds.lua
+│   │   ├── keymaps.lua
+│   │   ├── lazy.lua      -- Plugin loader + extras
+│   │   ├── options.lua   -- Line endings, indentation, shell
+│   │   └── health.lua
+│   └── plugins           -- Plugin specs (one file per domain)
+│       ├── android.lua
+│       ├── asmview.lua
+│       ├── clangd.lua
+│       ├── cmake.lua
+│       ├── conform.lua
+│       ├── dap_ui.lua
+│       ├── dap.lua
+│       ├── fmt_cmake.lua
+│       ├── gitignore.lua
+│       ├── godbolt.lua
+│       ├── mason_tools.lua
+│       ├── neogen.lua
+│       ├── neotest.lua
+│       ├── overseer.lua
+│       ├── snacks.lua
+│       ├── treesj.lua
+│       ├── users.lua
+│       └── user.lua
+```
 
-## Platform Notes
+## 🔌 Features
 
-### Linux
+| Feature | Plugin / Extra | Keymap |
+|---------|---------------|--------|
+| LSP (C/C++) | `clangd` + `clangd_extensions.nvim` | Hover `K`, Rename `<leader>cr` |
+| CMake | `cmake-tools.nvim` + `neocmake` | Build `<leader>cb`, Run `<leader>cr` |
+| Debug | `nvim-dap` + `codelldb` + `nvim-dap-ui` | Toggle breakpoint `<leader>db`, Continue `<leader>dc` |
+| Test (GTest) | `neotest` + `neotest-gtest` | Run nearest `<leader>tt`, Summary `<leader>tS` |
+| Format | `conform.nvim` (`clang-format`, `cmake_format`) | Format `<leader>cf` |
+| Assembly view | `vim-godbolt` | Show asm `<leader>caa`, Pipeline `<leader>cap` |
+| Tasks / Presets | `overseer.nvim` | Task runner `<leader>or` |
+| Doxygen | `neogen` | Generate doc `<leader>cn` |
+| Symbol outline | `aerial.nvim` (LazyVim extra) | Toggle `<leader>cs` |
+| Git diff | `diffview.nvim` (LazyVim extra) | Open `<leader>gd` |
+| Rename preview | `inc-rename.nvim` (LazyVim extra) | `<leader>cr` (live preview) |
+
+## 🛠️ C++ Workflow Tips
+
+### compile_commands.json
+
+`clangd` needs this file in the project root or build directory.
 
 ```bash
-# Fedora
-sudo dnf install neovim
-
-# Ubuntu / Debian
-sudo apt install neovim
+# Symlink it so clangd finds it regardless of cwd
+ln -s build/compile_commands.json compile_commands.json
 ```
 
-### macOS
+Or configure CMake:
+
+```cmake
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+```
+
+### CMake Presets
+
+This config uses `cmake-tools.nvim` with native CMake Presets support. Ensure your repository has `CMakePresets.json` at the project root.
+
+### Line endings (LF)
+
+This repository enforces LF via [`.gitattributes`](.gitattributes). Neovim options ([`options.lua`](lua/config/options.lua)) lock every buffer to `unix` format with an autocmd that strips stray carriage returns. If you still see CRLF warnings from `cmake-language-server`, ensure Git is not overriding `.gitattributes` with `core.autocrlf=true` at the system level:
 
 ```bash
-brew install neovim
-# Do NOT use: brew install --HEAD neovim
+git config --global core.autocrlf false
 ```
 
-### Windows
+## 📜 License
 
-Recommended: **WSL2 + Ubuntu**.
-
-For native Windows install the MSI from [Neovim Releases](https://github.com/neovim/neovim/releases), or use Scoop:
-
-```powershell
-scoop install neovim
-```
-
-You also need a C compiler for Treesitter — follow the [nvim-treesitter Windows guide](https://github.com/nvim-treesitter/nvim-treesitter#windows-installation).
-
----
-
-## C++ Development
-
-### CMake + `clangd`
-
-- Enable `lang.clangd` and `lang.cmake` via `:LazyExtras`
-- Ensure your project generates `compile_commands.json`:
-  ```cmake
-  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-  ```
-- Symlink it to the repo root so `clangd` sees it instantly:
-  ```bash
-  ln -s build/compile_commands.json compile_commands.json
-  ```
-
-### Debugging
-
-Install `codelldb` via `:Mason` and configure `nvim-dap` for your target.
-
-#### Windows LLDB / PDB Performance
-
-Neovim can freeze while LLDB loads native PDB symbols. Set this environment variable **before** launching:
-
-```powershell
-# Current session
-$env:LLDB_USE_NATIVE_PDB_READER = 1
-
-# Permanent (run as Administrator)
-[System.Environment]::SetEnvironmentVariable("LLDB_USE_NATIVE_PDB_READER", "1", "Machine")
-```
-
-Also ensure `msdia140.dll` from `[VisualStudioFolder]\DIA SDK\bin\` is on your `PATH` or copied next to your LLDB binary.
-
----
-
-## Python Development
-
-- Language server, linting, and formatting via LazyVim’s built-in Python extra
-- Debugging via `debugpy` (installed through Mason)
-- Activate your virtual environment before starting the debug session
-
-> **Note:** `nvim-dap-python` requires the correct virtual environment on Windows — see [mfussenegger/nvim-dap-python #118](https://github.com/mfussenegger/nvim-dap-python/issues/118) if breakpoints fail to bind.
-
----
-
-## Design Principles
-
-- **Minimal surface area** — only plugins that earn their keep
-- **Maximum reuse** — lean on LazyVim extras (`lang.clangd`, `lang.cmake`, `dap.core`) rather than reinventing defaults
-- **Snake_case / laconic style** — readable Lua, no unnecessary abstraction
-- **Fail-visible** — errors and diagnostics are surfaced, never hidden
-
----
-
-## Resources
-
-| Resource | Link |
-|----------|------|
-| LazyVim docs | [lazyvim.github.io](https://lazyvim.github.io/) |
-| LazyVim installation | [lazyvim.github.io/installation](https://lazyvim.github.io/installation) |
-| lazy.nvim docs | [lazy.folke.io/installation](https://lazy.folke.io/installation) |
-| lazy.nvim repo | [github.com/folke/lazy.nvim](https://github.com/folke/lazy.nvim) |
-| Neovim releases | [github.com/neovim/neovim/releases](https://github.com/neovim/neovim/releases) |
-| nvim-treesitter Windows | [github.com/nvim-treesitter/nvim-treesitter#windows-installation](https://github.com/nvim-treesitter/nvim-treesitter#windows-installation) |
-| nvim-dap-python #118 | [github.com/mfussenegger/nvim-dap-python/issues/118](https://github.com/mfussenegger/nvim-dap-python/issues/118) |
-| LazyVim #1581 (freeze) | [github.com/LazyVim/LazyVim/issues/1581](https://github.com/LazyVim/LazyVim/issues/1581) |
-
----
-
-## License
-
-See [license](license).
+[MIT](license)
