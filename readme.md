@@ -110,23 +110,38 @@ nvim --headless "+Lazy! sync" +qa                # force sync
 
 On `git commit`, if your branch name contains a Jira-style key (e.g. `feature/PROJ-123-fix`), the commit buffer is auto-prepended with `PROJ-123: `. Cursor lands right after the colon — no auth, no API, works offline.
 
+Supported branch patterns:
+```
+feature/PROJ-123-description
+bugfix/PROJ-456-fix
+PROJ-789-quick-patch
+```
+
 ### Full Jira integration (optional, requires auth)
 
-Set env vars to activate the plugin:
+Set env vars before launching Neovim:
 ```bash
 export JIRA_DOMAIN=yourcompany.atlassian.net
 export JIRA_USER=your-email@company.com
 export JIRA_API_TOKEN=your-api-token
 ```
 
+Get your API token: [id.atlassian.com → Security → API tokens](https://id.atlassian.com/manage-profile/security/api-tokens).
+
 Then inside Neovim:
 ```vim
-:Jira auth login
-:Jira <PROJECT_KEY>          -- open board
-:Jira info <ISSUE_KEY>       -- view issue
+:Jira auth login                    -- authenticate
+:Jira <PROJECT_KEY>                 -- open sprint board
+:Jira info <ISSUE_KEY>              -- view issue details
+:Jira create <PROJECT_KEY>          -- create new issue
 ```
 
-Plugin only loads when `JIRA_DOMAIN` is present; otherwise it stays invisible.
+| Keymap | Action |
+|--------|--------|
+| `<leader>jj` | Open Jira board for project |
+| `<leader>ji` | View current issue info |
+
+Plugin only loads when `JIRA_DOMAIN` is present; otherwise it stays invisible and costs zero startup time.
 
 ## C++ workflow
 
