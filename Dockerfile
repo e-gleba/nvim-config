@@ -41,4 +41,4 @@ RUN curl -fsSL https://github.com/JohnnyMorganz/StyLua/releases/download/v2.0.2/
     && rm /tmp/stylua.zip
 
 WORKDIR /workspace
-ENTRYPOINT ["nvim"]
+CMD ["nvim"]

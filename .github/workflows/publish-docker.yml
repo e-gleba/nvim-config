@@ -1,12 +1,24 @@
 name: publish-docker
 
 on:
+  workflow_call:
+    inputs:
+      tag:
+        required: false
+        type: string
+        default: latest
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag'
+        required: false
+        default: 'latest'
+        type: string
   push:
     branches: [main]
     paths:
       - 'Dockerfile'
       - '.github/workflows/publish-docker.yml'
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -30,12 +42,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine tag
+        id: tag
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="latest"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - uses: docker/metadata-action@v5
         id: meta
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ steps.tag.outputs.tag }},enable=true
 
       - uses: docker/build-push-action@v5
         with:
