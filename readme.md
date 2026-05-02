@@ -36,7 +36,7 @@ git config --global core.autocrlf false
 git config --global core.eol lf
 
 # config
-git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\nvim
+git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\\nvim
 nvim
 ```
 
@@ -66,6 +66,12 @@ nvim --headless "+Lazy! sync" +qa                # force sync
 
 - [Run publish-docker](https://github.com/e-gleba/nvim-config/actions/workflows/publish-docker.yml)
 - [Run release](https://github.com/e-gleba/nvim-config/actions/workflows/release.yml)
+
+## Remote Development
+
+Work on your laptop, build on a remote Mac or WSL box:
+- [SSH Setup Guide](docs/ssh_remote_dev.md) — connect to the machine
+- [Remote Neovim Workflow](docs/remote_nvim_workflow.md) — run nvim on the remote, generate Xcode projects, build
 
 ## Structure
 
