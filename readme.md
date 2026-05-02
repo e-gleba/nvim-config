@@ -201,8 +201,7 @@ open build/MyProject.xcodeproj
 │   │   ├── autocmds.lua
 │   │   ├── keymaps.lua
 │   │   ├── lazy.lua      -- Plugin loader + extras
-│   │   ├── options.lua   -- Line endings, indentation, shell
-│   │   └── web_search.lua
+│   │   └── options.lua   -- Line endings, indentation, shell
 │   └── plugins           -- Plugin specs (one file per domain)
 │       ├── android.lua
 │       ├── clangd.lua
@@ -218,7 +217,8 @@ open build/MyProject.xcodeproj
 │       ├── overseer.lua
 │       ├── snacks.lua
 │       ├── treesj.lua
-│       └── user.lua
+│       ├── user.lua
+│       └── web_search.lua
 ```
 
 ## Features
@@ -236,6 +236,7 @@ open build/MyProject.xcodeproj
 | Symbol outline | `aerial.nvim` (LazyVim extra) | Toggle `<leader>cs` |
 | Git diff | `diffview.nvim` (LazyVim extra) | Open `<leader>gd` |
 | Rename preview | `inc-rename.nvim` (LazyVim extra) | `<leader>cr` (live preview) |
+| Web search | `browse.nvim` (Google, cppreference, StackOverflow, Perplexity…) | `:Browse input` |
 
 ## C++ Workflow Tips
 
