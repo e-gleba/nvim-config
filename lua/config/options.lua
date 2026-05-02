@@ -6,7 +6,7 @@ local opt = vim.opt
 local g = vim.g
 local is_win = vim.fn.has('win32') == 1
 
--- Encoding
+-- Encoding --
 -- `fileencoding` (written to disk) defaults to UTF-8 in Neovim; be explicit.
 -- https://neovim.io/doc/user/options.html#'fileencoding'
 opt.fileencoding = 'utf-8'
@@ -22,10 +22,10 @@ opt.bomb = false
 opt.modeline = false
 opt.modelines = 0
 
--- Line endings -- LF-only, automatic, zero manual intervention.
+-- Line endings -- POSIX LF-only, zero manual intervention.
 --
--- On Windows, Git may check out CRLF (`core.autocrlf=true`). LSPs reading
--- from disk (`cmake-language-server`, `clangd`) then see `\r\n` and complain.
+-- Problem: Windows Git may checkout CRLF (`core.autocrlf=true`). LSPs
+-- (`cmake-language-server`, `clangd`) read from disk and complain about `\r\n`.
 -- We solve this with built-in Neovim mechanisms, not manual buffer surgery:
 --
 --   1. `fileformats = 'unix,dos'` -- Neovim detects CRLF files as `dos`
@@ -35,41 +35,41 @@ opt.modelines = 0
 --   2. `fileformat = 'unix'` -- default for new empty buffers.
 --      https://neovim.io/doc/user/options.html#'fileformat'
 --
---   3. `fixendofline = true` -- POSIX-compliant trailing newline on write.
+--   3. `fixendofline = true` -- POSIX-compliant trailing newline on every write.
 --      https://neovim.io/doc/user/options.html#'fixendofline'
 --
---   4. `endofline = true` -- buffer always claims a trailing newline.
---      https://neovim.io/doc/user/options.html#'endofline'
+--   4. Autocmd (`BufReadPost` / `BufNewFile`) -- any file detected as `dos`
+--      is converted in-memory to `unix` and *marked modified*. One `:w` stores
+--      LF to disk permanently. No manual `:set ff=unix` ever required.
+--      https://neovim.io/doc/user/autocmd.html#BufReadPost
 --
---   5. `BufReadPost` -- any file detected as `dos` is converted in-memory
---      to `unix` and marked *modified*. The next write stores LF to disk.
---      No manual `:set ff=unix` ever required.
+--   5. `BufWritePre` -- final guard so plugins cannot flip back to `dos`.
 --
---   6. `BufWritePre` / `BufNewFile` / `VimEnter` -- guard rails that
---      prevent plugins from flipping back to `dos` behind us.
+--   6. `editorconfig = false` -- prevent a parent `.editorconfig` with
+--      `end_of_line = crlf` from overriding us.
+--      https://neovim.io/doc/user/editorconfig.html
 --
+-- Git safety: run `:GitRenormalize` after changing `.gitattributes`.
 -- https://git-scm.com/docs/gitattributes#_end_of_line_conversion
---
--- Disable EditorConfig globally so a parent `.editorconfig` with
--- `end_of_line = crlf` cannot override us.
--- https://neovim.io/doc/user/editorconfig.html
+
 g.editorconfig = false
 
 opt.fileformats = 'unix,dos'
 opt.fileformat = 'unix'
 opt.fixendofline = true
-opt.endofline = true
 
-local lf_au = vim.api.nvim_create_augroup('LfEnforcement', { clear = true })
+local lf_au = vim.api.nvim_create_augroup('LfUnix', { clear = true })
 
--- After reading: convert detected DOS → Unix in-memory.
--- Buffer is marked modified; user saves once and disk is forever LF.
-vim.api.nvim_create_autocmd('BufReadPost', {
+-- After reading: convert detected DOS -> Unix in-memory and mark modified.
+-- The user saves once and the disk file is forever LF.
+vim.api.nvim_create_autocmd({'BufReadPost', 'BufNewFile'}, {
     group = lf_au,
     pattern = '*',
     callback = function(args)
-        if vim.bo[args.buf].fileformat == 'dos' then
-            vim.bo[args.buf].fileformat = 'unix'
+        local bo = vim.bo[args.buf]
+        if bo.fileformat == 'dos' then
+            bo.fileformat = 'unix'
+            bo.modified = true
         end
     end,
 })
@@ -83,25 +83,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     end,
 })
 
--- New empty buffers: start in LF mode.
-vim.api.nvim_create_autocmd('BufNewFile', {
-    group = lf_au,
-    pattern = '*',
-    callback = function(args)
-        vim.bo[args.buf].fileformat = 'unix'
-    end,
-})
-
--- After full startup: stomp any plugin that reset fileformats behind us.
-vim.api.nvim_create_autocmd('VimEnter', {
-    group = lf_au,
-    once = true,
-    callback = function()
-        vim.opt.fileformats = 'unix,dos'
-    end,
-})
-
--- Indentation
+-- Indentation --
 -- 4-space indent, hard tabs expanded. `textwidth` at 80 enables `gq`.
 -- https://neovim.io/doc/user/options.html#'textwidth'
 -- https://neovim.io/doc/user/options.html#'shiftwidth'
@@ -116,19 +98,19 @@ opt.softtabstop = 4
 opt.expandtab = true
 opt.wrap = false
 
--- Gutter
+-- Gutter --
 -- Enable signcolumn so LSP diagnostics, gitsigns, and DAP breakpoints
 -- are visible. Hiding it saves 2 columns but breaks IDE experience.
 -- https://neovim.io/doc/user/options.html#'signcolumn'
 opt.signcolumn = 'yes:2'
 
--- Python Tooling
+-- Python Tooling --
 -- LazyVim reads these globals to decide LSP and linter in `lang.python`.
 -- https://lazyvim.github.io/extras/lang/python
 g.lazyvim_python_lsp = 'basedpyright'
 g.lazyvim_python_ruff = 'ruff'
 
--- Windows -- PowerShell as default shell
+-- Windows -- PowerShell as default shell --
 -- Neovim on Windows defaults to cmd.exe. PowerShell provides POSIX-like
 -- piping and exit codes. Mirrors :help shell-powershell.
 -- https://neovim.io/doc/user/options.html#'shell'

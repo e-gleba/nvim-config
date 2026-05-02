@@ -1,6 +1,6 @@
-# Force LF for all text files so Git never converts to CRLF on checkout.
-# This prevents the cmake-language-server (and every other LSP) from seeing
-# \\r\\n on disk. Binary files are left untouched.
+# IMPORTANT: If you edit this file, run `:GitRenormalize` in Neovim
+# (or `git add --renormalize .` in shell) to apply new rules to existing
+# tracked files. Otherwise stale CRLF/LF mixes remain on disk.
 # https://git-scm.com/docs/gitattributes#_end_of_line_conversion
 
 # Auto-detect text files, but force LF when they are text.
