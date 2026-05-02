@@ -4,7 +4,6 @@
     "lazyvim.plugins.extras.editor.aerial",
     "lazyvim.plugins.extras.editor.harpoon2",
     "lazyvim.plugins.extras.editor.inc-rename",
-    "lazyvim.plugins.extras.editor.refactoring",
     "lazyvim.plugins.extras.lang.cmake",
     "lazyvim.plugins.extras.lang.java",
     "lazyvim.plugins.extras.lang.json",
