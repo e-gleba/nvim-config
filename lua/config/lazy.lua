@@ -42,7 +42,6 @@ require('lazy').setup({
         { import = 'lazyvim.plugins.extras.test.core' },
         { import = 'lazyvim.plugins.extras.editor.aerial' },
         { import = 'lazyvim.plugins.extras.editor.inc-rename' },
-        { import = 'lazyvim.plugins.extras.git.diffview' },
 
         -- import/override with your plugins
         { import = 'plugins' },
