@@ -18,6 +18,7 @@ RUN apt-get update \
         fzf \
         fd-find \
         ripgrep \
+        lazygit \
         unzip \
     && ln -sf $(which fdfind) /usr/local/bin/fd \
     && rm -rf /var/lib/apt/lists/*
@@ -26,10 +27,6 @@ RUN apt-get update \
 RUN curl -fsSL https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz \
     | tar -xz -C /opt \
     && ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-
-# lazygit
-RUN curl -fsSL https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_Linux_x86_64.tar.gz \
-    | tar -xz -C /usr/local/bin lazygit
 
 # StyLua
 RUN curl -fsSL https://github.com/JohnnyMorganz/StyLua/releases/download/v2.0.2/stylua-linux-x86_64.zip -o /tmp/stylua.zip \
