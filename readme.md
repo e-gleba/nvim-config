@@ -26,29 +26,93 @@ It is designed to be:
 
 ## Prerequisites
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| [Neovim](https://neovim.io) 0.10+ | Editor | `brew install neovim` / `winget install Neovim.Neovim` |
-| [Git](https://git-scm.com) | Plugin manager | Usually pre-installed |
-| [CMake](https://cmake.org) 3.20+ | Build system | `brew install cmake` / `winget install Kitware.CMake` |
-| [Ninja](https://ninja-build.org) | Fast generator | `brew install ninja` / `choco install ninja` |
-| C++ toolchain | Compiler + debugger | Xcode / MSVC / GCC / Clang |
-| [fzf](https://github.com/junegunn/fzf) | Fuzzy finder | `brew install fzf` / `winget install fzf` |
-| [fd](https://github.com/sharkdp/fd) | Fast file finder | `brew install fd` / `choco install fd` |
-| [ripgrep](https://github.com/BurntSushi/ripgrep) | Fast grep | `brew install ripgrep` / `winget install BurntSushi.ripgrep.MSVC` |
-| [lazygit](https://github.com/jesseduffield/lazygit) | TUI Git client | `brew install lazygit` / `winget install JesseDuffield.lazygit` |
+### macOS
+
+```bash
+brew install neovim git cmake ninja fzf fd ripgrep lazygit
+```
+
+### Linux (apt)
+
+```bash
+sudo apt update && sudo apt install -y neovim git cmake ninja-build fzf fd-find ripgrep
+# lazygit: follow https://github.com/jesseduffield/lazygit?tab=readme-ov-file#ubuntu
+```
+
+### Windows -- Scoop (recommended)
+
+```powershell
+# Install scoop (run once)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+
+# Install everything in one shot
+scoop install neovim git cmake ninja llvm fzf fd ripgrep lazygit
+```
+
+> **If you prefer winget / chocolatey:**
+> ```powershell
+> winget install Neovim.Neovim Kitware.CMake JernejSimoncic.Fzf sharkdp.Fd BurntSushi.Ripgrep.MSVC JesseDuffield.lazygit
+> choco install neovim cmake ninja fzf fd ripgrep lazygit
+> ```
+
+### All platforms
+
+| Requirement | Purpose | Check command |
+|-------------|---------|---------------|
+| [Neovim](https://neovim.io) 0.10+ stable | Editor | `nvim --version` |
+| [Git](https://git-scm.com) | Plugin manager | `git --version` |
+| [CMake](https://cmake.org) 3.20+ | Build system | `cmake --version` |
+| [Ninja](https://ninja-build.org) | Fast generator | `ninja --version` |
+| C++ toolchain | Compiler + debugger | `clang++ --version` / `cl` / `g++` |
+| [fzf](https://github.com/junegunn/fzf) | Fuzzy finder | `fzf --version` |
+| [fd](https://github.com/sharkdp/fd) | Fast file finder | `fd --version` |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | Fast grep | `rg --version` |
+| [lazygit](https://github.com/jesseduffield/lazygit) | TUI Git client | `lazygit --version` |
 | Nerd Font | Icons in terminal | [JetBrainsMono Nerd Font](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip) |
 
-> **Windows Note:** `clangd` and `codelldb` are installed automatically via [Mason](https://github.com/williamboman/mason.nvim). If you see PDB errors during native debugging, enable **Edit and Continue** in Visual Studio or set the environment variable `LLDB_USE_NATIVE_PDB_READER=1` before launching Neovim.
-
-> **Line endings:** This repository enforces LF via [`.gitattributes`](.gitattributes). If you still see CRLF warnings from `cmake-language-server`, ensure Git is not overriding with `core.autocrlf=true`:
+> **Nightly warning (macOS):** Do NOT install Neovim nightly. It causes file-reload freezes. See [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581).
 > ```bash
-> git config --global core.autocrlf false
+> brew install neovim        # OK
+> brew install --HEAD neovim # NOT OK
+> ```
+
+## Windows Environment Variables
+
+Some Windows-specific environment variables are required for debugging and line-ending sanity.
+
+### LLDB / CodeLLDB PDB support
+
+CodeLLDB on Windows needs the native PDB reader to debug MSVC binaries. Set this **permanently** (recommended) or per-session.
+
+```powershell
+# Permanent -- persists across reboots
+[Environment]::SetEnvironmentVariable("LLDB_USE_NATIVE_PDB_READER", "1", "User")
+
+# Current session only
+$env:LLDB_USE_NATIVE_PDB_READER = "1"
+```
+
+### Line endings -- force LF in Git
+
+Neovim and LSPs require LF. Prevent Git from converting to CRLF on checkout:
+
+```powershell
+# Global -- affects all repositories
+[Environment]::SetEnvironmentVariable("GIT_LFS_PATH", "$env:USERPROFILE\scoop\apps\git-lfs\current", "User")
+git config --global core.autocrlf false
+git config --global core.eol lf
+```
+
+> If you already cloned a repo with CRLF, force-reset line endings:
+> ```bash
+> git rm --cached -r .
+> git reset --hard
 > ```
 
 ## Quick Start
 
-### Linux / macOS
+### macOS / Linux
 
 ```bash
 # 1. Back up existing config
@@ -79,13 +143,6 @@ git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\nvim
 
 # 3. Launch
 nvim
-```
-
-### macOS Warning: Do NOT install nightly
-
-```bash
-# AVOID -- causes file-reload freezes documented in LazyVim issue #1581
-brew install --HEAD neovim   # NOT RECOMMENDED
 ```
 
 ## Working with Native IDEs
@@ -190,12 +247,12 @@ This config uses `cmake-tools.nvim` with native CMake Presets support. Ensure yo
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `cmake-language-server` reports "invalid line endings" | CRLF on disk (Git `core.autocrlf=true`) | `git config --global core.autocrlf false`, re-clone repo |
+| `cmake-language-server` reports "invalid line endings" | CRLF on disk (Git `core.autocrlf=true`) | See [Windows Environment Variables](#windows-environment-variables) section above; re-clone with `core.autocrlf=false` |
 | Neovim freezes on file reload | Neovim 0.10.x nightly bug | Use stable 0.10.x release, not HEAD. See [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581) |
-| Debug symbols load slowly on Windows | LLDB using old DIA reader | Set `$env:LLDB_USE_NATIVE_PDB_READER=1` permanently |
+| Debug symbols load slowly on Windows | LLDB using old DIA reader | Run `[Environment]::SetEnvironmentVariable("LLDB_USE_NATIVE_PDB_READER", "1", "User")` and restart Neovim |
 | `nvim-dap-python` fails on Windows | Virtual environment not activated | Activate venv before launching Neovim. See [nvim-dap-python #118](https://github.com/mfussenegger/nvim-dap-python/issues/118) |
 | Missing icons / garbled glyphs | Terminal lacks Nerd Font | Install [JetBrainsMono Nerd Font](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip) and set terminal font |
-| `fzf` / `fd` / `rg` not found | Tools not in PATH | Install via package manager (see Prerequisites table) |
+| `fzf` / `fd` / `rg` not found | Tools not in PATH | Add scoop / brew / apt bin directory to PATH, or reinstall |
 
 ## License
 
