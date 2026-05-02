@@ -14,8 +14,8 @@
 *.hpp   text eol=lf
 *.cmake text eol=lf
 CMakeLists.txt text eol=lf
-*.lua   text eol=lf
-*.md    text eol=lf
+*.lua   text eol=lf linguist-language=Lua
+*.md    text eol=lf linguist-documentation
 *.json  text eol=lf
 *.toml  text eol=lf
 *.yml   text eol=lf
@@ -45,3 +45,6 @@ CMakeLists.txt text eol=lf
 *.dylib binary
 *.a    binary
 *.lib  binary
+
+# GitHub linguist: mark generated files so they don't skew language stats.
+lazy-lock.json linguist-generated=true
