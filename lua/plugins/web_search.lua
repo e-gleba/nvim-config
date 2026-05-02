@@ -5,6 +5,9 @@
 -- Ref: https://github.com/lalitmee/browse.nvim
 
 local bookmarks = {
+    -- AI Search
+    scira = 'https://scira.ai?q=%s',
+
     -- General
     google = 'https://www.google.com/search?q=%s',
     perplexity = 'https://www.perplexity.ai/search?q=%s',
@@ -67,6 +70,7 @@ return {
             bookmarks = bookmarks,
         },
         keys = {
+            { '<leader>ss', search(bookmarks.scira), desc = 'Search Scira AI', mode = { 'n', 'x' } },
             { '<leader>sG', search(bookmarks.google), desc = 'Search Google', mode = { 'n', 'x' } },
             { '<leader>sH', search(bookmarks['github-code']), desc = 'Search GitHub Code', mode = { 'n', 'x' } },
             { '<leader>sO', search(bookmarks.stackoverflow), desc = 'Search StackOverflow', mode = { 'n', 'x' } },
