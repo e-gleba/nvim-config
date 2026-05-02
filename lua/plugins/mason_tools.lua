@@ -5,14 +5,14 @@
 ---   https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim
 ---   https://github.com/mason-org/mason.nvim
 return {
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
-    dependencies = { "mason-org/mason.nvim" },
+    'WhoIsSethDaniel/mason-tool-installer.nvim',
+    dependencies = { 'mason-org/mason.nvim' },
     opts = {
         ensure_installed = {
-            "clangd",
-            "clang-format",
-            "codelldb",
-            "cmake-language-server",
+            'clangd',
+            'clang-format',
+            'codelldb',
+            'cmake-language-server',
         },
         run_on_start = true,
     },

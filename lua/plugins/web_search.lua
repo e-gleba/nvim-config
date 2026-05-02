@@ -43,7 +43,11 @@ local function search(template)
         local text
         if mode == 'v' or mode == 'V' or mode == '\22' then
             text = table.concat(
-                vim.fn.getregion(vim.fn.getpos('v'), vim.fn.getpos('.'), { type = mode }),
+                vim.fn.getregion(
+                    vim.fn.getpos('v'),
+                    vim.fn.getpos('.'),
+                    { type = mode }
+                ),
                 ' '
             )
         else
@@ -70,12 +74,42 @@ return {
             bookmarks = bookmarks,
         },
         keys = {
-            { '<leader>ss', search(bookmarks.scira), desc = 'Search Scira AI', mode = { 'n', 'x' } },
-            { '<leader>sG', search(bookmarks.google), desc = 'Search Google', mode = { 'n', 'x' } },
-            { '<leader>sH', search(bookmarks['github-code']), desc = 'Search GitHub Code', mode = { 'n', 'x' } },
-            { '<leader>sO', search(bookmarks.stackoverflow), desc = 'Search StackOverflow', mode = { 'n', 'x' } },
-            { '<leader>sR', search(bookmarks.cppreference), desc = 'Search cppreference', mode = { 'n', 'x' } },
-            { '<leader>sW', '<cmd>Browse input<cr>', desc = 'Web search (pick engine)', mode = { 'n', 'x' } },
+            {
+                '<leader>ss',
+                search(bookmarks.scira),
+                desc = 'Search Scira AI',
+                mode = { 'n', 'x' },
+            },
+            {
+                '<leader>sG',
+                search(bookmarks.google),
+                desc = 'Search Google',
+                mode = { 'n', 'x' },
+            },
+            {
+                '<leader>sH',
+                search(bookmarks['github-code']),
+                desc = 'Search GitHub Code',
+                mode = { 'n', 'x' },
+            },
+            {
+                '<leader>sO',
+                search(bookmarks.stackoverflow),
+                desc = 'Search StackOverflow',
+                mode = { 'n', 'x' },
+            },
+            {
+                '<leader>sR',
+                search(bookmarks.cppreference),
+                desc = 'Search cppreference',
+                mode = { 'n', 'x' },
+            },
+            {
+                '<leader>sW',
+                '<cmd>Browse input<cr>',
+                desc = 'Web search (pick engine)',
+                mode = { 'n', 'x' },
+            },
         },
     },
 }

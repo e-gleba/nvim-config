@@ -7,12 +7,12 @@
 ---   https://github.com/mfussenegger/nvim-dap
 return {
     {
-        "rcarriga/nvim-dap-ui",
-        dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+        'rcarriga/nvim-dap-ui',
+        dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' },
         opts = {},
     },
     {
-        "theHamsta/nvim-dap-virtual-text",
+        'theHamsta/nvim-dap-virtual-text',
         opts = {},
     },
 }

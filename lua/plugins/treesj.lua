@@ -4,10 +4,16 @@
 ---   https://github.com/Wansmer/treesj
 ---   https://github.com/nvim-treesitter/nvim-treesitter
 return {
-    "Wansmer/treesj",
+    'Wansmer/treesj',
     keys = {
-        { "<leader>cm", function() require("treesj").toggle() end, desc = "Toggle syntax block" },
+        {
+            '<leader>cm',
+            function()
+                require('treesj').toggle()
+            end,
+            desc = 'Toggle syntax block',
+        },
     },
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
     opts = { use_default_keymaps = false },
 }

@@ -14,7 +14,8 @@
 vim.api.nvim_create_autocmd('FileType', {
     pattern = 'gitcommit',
     callback = function()
-        local branch = vim.fn.trim(vim.fn.system({ 'git', 'branch', '--show-current' }))
+        local branch =
+            vim.fn.trim(vim.fn.system({ 'git', 'branch', '--show-current' }))
         if vim.v.shell_error ~= 0 then
             return
         end

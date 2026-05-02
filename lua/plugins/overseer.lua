@@ -3,6 +3,6 @@
 --- Ref:
 ---   https://github.com/stevearc/overseer.nvim
 return {
-    "stevearc/overseer.nvim",
+    'stevearc/overseer.nvim',
     opts = {},
 }

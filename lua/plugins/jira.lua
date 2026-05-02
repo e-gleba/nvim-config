@@ -19,7 +19,12 @@ return {
         opts = {},
         keys = {
             { '<leader>jj', '<cmd>Jira<cr>', desc = 'Jira board', mode = 'n' },
-            { '<leader>ji', '<cmd>Jira info<cr>', desc = 'Jira issue info', mode = 'n' },
+            {
+                '<leader>ji',
+                '<cmd>Jira info<cr>',
+                desc = 'Jira issue info',
+                mode = 'n',
+            },
         },
     },
 }

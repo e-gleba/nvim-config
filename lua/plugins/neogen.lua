@@ -4,10 +4,16 @@
 ---   https://github.com/danymat/neogen
 ---   https://github.com/nvim-treesitter/nvim-treesitter
 return {
-    "danymat/neogen",
+    'danymat/neogen',
     keys = {
-        { "<leader>cn", function() require("neogen").generate() end, desc = "Generate doc comment" },
+        {
+            '<leader>cn',
+            function()
+                require('neogen').generate()
+            end,
+            desc = 'Generate doc comment',
+        },
     },
-    dependencies = "nvim-treesitter/nvim-treesitter",
-    opts = { snippet_engine = "luasnip" },
+    dependencies = 'nvim-treesitter/nvim-treesitter',
+    opts = { snippet_engine = 'luasnip' },
 }
