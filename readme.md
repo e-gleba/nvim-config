@@ -74,6 +74,7 @@ nvim --headless "+Lazy! sync" +qa                # force sync
         ├── dap_ui.lua
         ├── format.lua
         ├── godbolt.lua
+        ├── jira.lua
         ├── mason_tools.lua
         ├── neogen.lua
         ├── neotest.lua
@@ -100,6 +101,32 @@ nvim --headless "+Lazy! sync" +qa                # force sync
 | StackOverflow | `<leader>sO` |
 | cppreference | `<leader>sR` |
 | Web search picker | `<leader>sW` |
+| Jira board (if configured) | `<leader>jj` |
+| Jira issue info (if configured) | `<leader>ji` |
+
+## Jira workflow
+
+### Zero-auth commit prefix (always active)
+
+On `git commit`, if your branch name contains a Jira-style key (e.g. `feature/PROJ-123-fix`), the commit buffer is auto-prepended with `PROJ-123: `. Cursor lands right after the colon — no auth, no API, works offline.
+
+### Full Jira integration (optional, requires auth)
+
+Set env vars to activate the plugin:
+```bash
+export JIRA_DOMAIN=yourcompany.atlassian.net
+export JIRA_USER=your-email@company.com
+export JIRA_API_TOKEN=your-api-token
+```
+
+Then inside Neovim:
+```vim
+:Jira auth login
+:Jira <PROJECT_KEY>          -- open board
+:Jira info <ISSUE_KEY>       -- view issue
+```
+
+Plugin only loads when `JIRA_DOMAIN` is present; otherwise it stays invisible.
 
 ## C++ workflow
 
