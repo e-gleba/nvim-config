@@ -36,3 +36,12 @@ jobs:
           gh release create ${{ inputs.version }} \
             --generate-notes \
             --title "${{ inputs.version }}"
+
+  publish-docker:
+    needs: release
+    uses: ./.github/workflows/publish-docker.yml
+    with:
+      tag: ${{ inputs.version }}
+    permissions:
+      contents: read
+      packages: write

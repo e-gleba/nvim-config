@@ -58,17 +58,14 @@ nvim --headless "+Lazy! sync" +qa                # force sync
 
 ## CI & Release
 
-### Lint
-Runs `stylua --check` inside a container on every Lua change. Uses registry cache — does not rebuild from scratch.
+| Workflow | Trigger | Result |
+|----------|---------|--------|
+| **Lint** | Push / PR on `lua/**`, `init.lua`, lockfiles | Pulls `ghcr.io/.../nvim-ci:latest` and runs `stylua --check`. Falls back to local build if image is absent. |
+| **Publish Docker** | Manual dispatch, or push to `main` with `Dockerfile` changes | Builds and pushes `ghcr.io/.../nvim-ci:latest`. |
+| **Release** | Manual dispatch with version tag | Creates GitHub Release with auto-generated notes, then builds and pushes a tagged Docker image (`v1.2.3`). |
 
-### Publish Docker
-Manually trigger via [Actions → publish-docker](https://github.com/e-gleba/nvim-config/actions/workflows/publish-docker.yml) or push to `main` with `Dockerfile` changes.
-
-### Release
-1. Go to [Actions → release](https://github.com/e-gleba/nvim-config/actions/workflows/release.yml).
-2. Click **Run workflow**.
-3. Enter version (`v1.2.3`).
-4. Workflow creates the tag and auto-generates release notes from merged PRs.
+- [Run publish-docker](https://github.com/e-gleba/nvim-config/actions/workflows/publish-docker.yml)
+- [Run release](https://github.com/e-gleba/nvim-config/actions/workflows/release.yml)
 
 ## Structure
 
