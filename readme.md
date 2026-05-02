@@ -2,23 +2,27 @@
 
 # nvim-config
 
-**A fast, stable, cross-platform C++ IDE inside Neovim.**
+**Professional cross-platform C++ IDE inside Neovim.**
+**CMake-first. Targets: Android, iOS, Linux, Windows, macOS.**
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Lua](https://img.shields.io/badge/Lua-5.1-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](license)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/e-gleba/nvim-config?style=social)](https://github.com/e-gleba/nvim-config)
 
 </div>
 
 ---
 
-## ⚡ Philosophy
+## Target Audience
 
+This configuration is built for **professional cross-platform C++ developers** who work across **Android, iOS, Linux, Windows, and macOS** using **CMake** as the universal build system.
+
+It is designed to be:
+- **AI-agent friendly** — self-contained, heavily documented, minimal wrapper surface.
 - **Fast** — zero animation, lazy-loaded everything, native LSP via `clangd`.
-- **Stable** — upstream defaults first, minimal custom wrapper surface.
-- **Cross-platform** — Windows, macOS, Linux. Android & iOS via hybrid workflow.
-- **C++ first** — CMake, `clangd`, `clang-format`, `codelldb`, Google Test.
+- **Stable** — upstream defaults first, explicit over clever.
+- **Cross-platform** — identical experience on every OS.
 
 ## 📦 Prerequisites
 
@@ -31,6 +35,11 @@
 | C++ toolchain | Compiler + debugger | Xcode / MSVC / GCC / Clang |
 
 > **Windows Note:** `clangd` and `codelldb` are installed automatically via [Mason](https://github.com/williamboman/mason.nvim). If you see PDB errors during native debugging, enable **Edit and Continue** in Visual Studio or set the environment variable `MSVC_ENABLE_PDB=1` before launching Neovim.
+
+> **Line endings:** This repository enforces LF via [`.gitattributes`](.gitattributes). If you still see CRLF warnings from `cmake-language-server`, ensure Git is not overriding with `core.autocrlf=true`:
+> ```bash
+> git config --global core.autocrlf false
+> ```
 
 ## 🚀 Quick Start
 
@@ -51,22 +60,21 @@ nvim
 ~/.config/nvim
 ├── init.lua              -- Entry point
 ├── lazy-lock.json        -- Pin exact plugin versions
+├── LICENSE               -- Apache 2.0
 ├── lua
 │   ├── config            -- Core: keymaps, options, autocmds, lazy
 │   │   ├── autocmds.lua
 │   │   ├── keymaps.lua
 │   │   ├── lazy.lua      -- Plugin loader + extras
 │   │   ├── options.lua   -- Line endings, indentation, shell
-│   │   └── health.lua
+│   │   └── web_search.lua
 │   └── plugins           -- Plugin specs (one file per domain)
 │       ├── android.lua
-│       ├── asmview.lua
 │       ├── clangd.lua
 │       ├── cmake.lua
-│       ├── conform.lua
+│       ├── colortheme.lua
 │       ├── dap_ui.lua
-│       ├── dap.lua
-│       ├── fmt_cmake.lua
+│       ├── format.lua
 │       ├── gitignore.lua
 │       ├── godbolt.lua
 │       ├── mason_tools.lua
@@ -75,7 +83,6 @@ nvim
 │       ├── overseer.lua
 │       ├── snacks.lua
 │       ├── treesj.lua
-│       ├── users.lua
 │       └── user.lua
 ```
 
@@ -116,14 +123,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 This config uses `cmake-tools.nvim` with native CMake Presets support. Ensure your repository has `CMakePresets.json` at the project root.
 
-### Line endings (LF)
-
-This repository enforces LF via [`.gitattributes`](.gitattributes). Neovim options ([`options.lua`](lua/config/options.lua)) lock every buffer to `unix` format with an autocmd that strips stray carriage returns. If you still see CRLF warnings from `cmake-language-server`, ensure Git is not overriding `.gitattributes` with `core.autocrlf=true` at the system level:
-
-```bash
-git config --global core.autocrlf false
-```
-
 ## 📜 License
 
-[MIT](license)
+[Apache 2.0](LICENSE)
