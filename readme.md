@@ -56,6 +56,20 @@ nvim --headless -V1 -c 'checkhealth' -c 'qa'   # verify
 nvim --headless "+Lazy! sync" +qa                # force sync
 ```
 
+## CI & Release
+
+### Lint
+Runs `stylua --check` inside a container on every Lua change. Uses registry cache — does not rebuild from scratch.
+
+### Publish Docker
+Manually trigger via [Actions → publish-docker](https://github.com/e-gleba/nvim-config/actions/workflows/publish-docker.yml) or push to `main` with `Dockerfile` changes.
+
+### Release
+1. Go to [Actions → release](https://github.com/e-gleba/nvim-config/actions/workflows/release.yml).
+2. Click **Run workflow**.
+3. Enter version (`v1.2.3`).
+4. Workflow creates the tag and auto-generates release notes from merged PRs.
+
 ## Structure
 
 ```

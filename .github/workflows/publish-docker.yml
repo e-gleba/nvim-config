@@ -1,11 +1,11 @@
-name: docker
+name: publish-docker
 
 on:
   push:
     branches: [main]
     paths:
       - 'Dockerfile'
-      - '.github/workflows/docker.yml'
+      - '.github/workflows/publish-docker.yml'
   workflow_dispatch:
 
 permissions:
