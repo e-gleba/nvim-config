@@ -42,6 +42,14 @@ nvim
 
 > Do not install Neovim nightly on macOS — it causes file-reload freezes. See [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581).
 
+### Docker (Linux x86_64)
+```bash
+docker run -it --rm \
+  -v $(pwd):/workspace \
+  -v ~/.config/nvim:/root/.config/nvim \
+  ghcr.io/e-gleba/nvim-config/nvim-ci:latest
+```
+
 ## First run
 ```bash
 nvim --headless -V1 -c 'checkhealth' -c 'qa'   # verify
