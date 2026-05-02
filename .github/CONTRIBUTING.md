@@ -13,7 +13,7 @@ Thank you for your interest in contributing!
 ## Code Style
 
 - Lua files: follow the existing indentation (4 spaces, no tabs).
-- Keep plugin specs minimal — prefer upstream defaults over custom wrappers.
+- Keep plugin specs minimal -- prefer upstream defaults over custom wrappers.
 - Every plugin file must include a comment block with the upstream URL.
 
 ## Issues

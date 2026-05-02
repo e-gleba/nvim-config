@@ -16,55 +16,56 @@ opt.fileencoding = 'utf-8'
 -- reading from disk (cmake-language-server, clangd on first scan) see
 -- `\r\n`. We remove ALL possibility of DOS format:
 --
---   1. `.gitattributes` -- forces Git to normalize to LF on checkout.
+--   1. Disable EditorConfig globally. A parent `.editorconfig` with
+--      `end_of_line = crlf` silently overrides Neovim options.
+--      https://neovim.io/doc/user/editorconfig.html
 --   2. `fileformats = 'unix'` -- Neovim NEVER attempts dos/mac detection.
---      Files are read as unix; literal `\r` stays in buffer and is
---      stripped by autocmd below.
+--      https://neovim.io/doc/user/options.html#'fileformats'
 --   3. `fileformat = 'unix'` -- default for new empty buffers.
---   4. `fixendofline` / `endofline` -- POSIX-compliant trailing newline.
---   5. Autocmd -- unconditional `\r` stripping after every read.
---      The old `search('\\r')` guard failed on hidden `\r` or race with LSP.
+--      https://neovim.io/doc/user/options.html#'fileformat'
+--   4. `fixendofline = true` -- POSIX-compliant trailing newline on write.
+--      https://neovim.io/doc/user/options.html#'fixendofline'
+--   5. After read: strip literal `\r` left by `fileformats=unix`.
+--      Pure Lua -- no vim.cmd string escaping, no winrestview fragility.
+--   6. Before write: reaffirm `unix` so plugins cannot flip to dos.
 --
--- https://neovim.io/doc/user/options.html#'fileformat'
--- https://neovim.io/doc/user/options.html#'fileformats'
--- https://neovim.io/doc/user/options.html#'fixendofline'
--- https://neovim.io/doc/user/options.html#'endofline'
--- https://neovim.io/doc/user/editing.html#file-formats
 -- https://git-scm.com/docs/gitattributes#_end_of_line_conversion
-opt.fileformats = 'unix'     -- do NOT fall back to dos or mac
-opt.fileformat = 'unix'      -- default for new empty buffers
-opt.fixendofline = true      -- ensure POSIX trailing newline on write
-opt.endofline = true         -- write trailing newline
 
-local force_lf_au = vim.api.nvim_create_augroup('ForceUnixLf', { clear = true })
+vim.g.editorconfig = false
 
--- After reading or creating a file: lock to LF and strip stray ^M.
--- Unconditional -- the substitution is fast and prevents LSP races.
-vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile', 'FilterReadPost' }, {
+opt.fileformats = 'unix'
+opt.fileformat = 'unix'
+opt.fixendofline = true
+
+local force_lf_au = vim.api.nvim_create_augroup('ForceLf', { clear = true })
+
+-- After reading a file: strip stray carriage returns.
+-- When Git checks out CRLF on Windows, Neovim reads as unix format
+-- and the `\r` stays as a literal trailing character. We remove it
+-- with a pure Lua loop so LSPs never see DOS line endings.
+vim.api.nvim_create_autocmd('BufReadPost', {
     group = force_lf_au,
     pattern = '*',
     callback = function(args)
-        -- Skip binary / special buffers (term, quickfix, help, etc.)
-        local buftype = vim.bo[args.buf].buftype
-        if buftype ~= '' and buftype ~= 'nowrite' then
+        if vim.bo[args.buf].buftype ~= '' then
             return
         end
-
-        -- Lock format to unix so writes produce LF only.
-        vim.bo[args.buf].fileformat = 'unix'
-        vim.bo[args.buf].fixendofline = true
-
-        -- Strip literal carriage returns left by `fileformats=unix`.
-        -- `keeppatterns` preserves the search history; `silent!`
-        -- suppresses the "pattern not found" message when no \r exists.
-        local view = vim.fn.winsaveview()
-        vim.cmd([[keeppatterns silent! %s/\r$//e]])
-        vim.fn.winrestview(view)
+        local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
+        local dirty = false
+        for i, line in ipairs(lines) do
+            if line:sub(-1) == '\r' then
+                lines[i] = line:sub(1, -2)
+                dirty = true
+            end
+        end
+        if dirty then
+            vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
+            vim.bo[args.buf].fileformat = 'unix'
+        end
     end,
 })
 
--- Before every write: re-affirm unix format (prevents plugins from
--- flipping it back to dos after the BufReadPost autocmd).
+-- Before every write: lock to LF.
 vim.api.nvim_create_autocmd('BufWritePre', {
     group = force_lf_au,
     pattern = '*',
