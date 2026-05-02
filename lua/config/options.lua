@@ -1,42 +1,47 @@
 -- Options — loaded automatically before lazy.nvim startup
--- https://lazyvim.github.io/configuration/general
 -- LazyVim defaults: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
---
--- This file only contains *overrides*. Anything not set here inherits
--- from LazyVim's defaults. Values here win because this file loads
--- after the LazyVim options module.
+-- This file only contains *overrides*. Anything not set here inherits from LazyVim.
 
 local opt = vim.opt
 local g = vim.g
 local is_win = vim.fn.has('win32') == 1
 
 -- Encoding
--- `vim.o.encoding` defaults to UTF-8 in Neovim, but `fileencoding`
--- (the encoding written to disk) does not — set it explicitly.
+-- `fileencoding` (written to disk) defaults to UTF-8 in Neovim, but be explicit.
 -- https://neovim.io/doc/user/options.html#'fileencoding'
 opt.fileencoding = 'utf-8'
 
--- Line endings — force LF on every buffer regardless of OS or Git checkout mode.
--- `fileformat` is buffer-local; a global `opt.fileformat` only affects new empty
--- buffers. When a file is read from disk Neovim auto-detects from `fileformats`,
--- so Git `core.autocrlf=true` on Windows silently produces `dos` buffers even
--- though the user asked for `unix`. This autocmd overrides detection after every
--- read and strips any stray carriage returns so the buffer is clean for the LSP.
+-- Line endings — force LF globally and on every buffer.
+-- On Windows Git may check out CRLF (`core.autocrlf=true`), and the
+-- cmake-language-server (or any LSP reading from disk) will see `\r\n`.
+-- Four layers of defense:
+--   1. `fileformats` — auto-detection order prefers unix over dos.
+--   2. `fileformat`  — default for new empty buffers.
+--   3. Autocmds      — override after read and before write so buffers are
+--      always `unix` and literal `\r` is stripped before LSP sees text.
+--   4. `.gitattributes` in repo root — forces Git to normalize to LF on checkout.
 -- https://neovim.io/doc/user/options.html#'fileformat'
 -- https://neovim.io/doc/user/options.html#'fileformats'
 -- https://neovim.io/doc/user/editing.html#file-formats
+-- https://git-scm.com/docs/gitattributes#_end_of_line_conversion
+opt.fileformats = 'unix,dos' -- try unix first when reading
+opt.fileformat = 'unix'      -- default for new empty buffers
+
+local force_lf_au = vim.api.nvim_create_augroup('ForceUnixLf', { clear = true })
+
+-- After reading or creating a file: lock to LF and strip stray ^M.
 vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
-    group = vim.api.nvim_create_augroup('ForceUnixLf', { clear = true }),
+    group = force_lf_au,
     pattern = '*',
     callback = function()
-        -- Always write with LF; ensure the file ends with a newline.
-        -- https://neovim.io/doc/user/options.html#'fixendofline'
+        -- Lock format to unix so writes produce LF only.
         vim.bo.fileformat = 'unix'
+        -- Ensure file ends with a newline (POSIX standard).
+        -- https://neovim.io/doc/user/options.html#'fixendofline'
         vim.bo.fixendofline = true
 
-        -- If Git checked out CRLF, strip literal ^M from the buffer text so the
-        -- file renders cleanly and the LSP sees pure LF content. Uses `search()`
-        -- to avoid a no-op substitution when there are no carriage returns.
+        -- If Git checked out CRLF and Neovim missed it (mixed-format
+        -- file or `fileformats` disabled), strip literal carriage returns.
         if vim.fn.search('\r', 'nw') > 0 then
             local view = vim.fn.winsaveview()
             vim.cmd([[keeppatterns silent! %s/\r$//e]])
@@ -45,9 +50,18 @@ vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufNewFile' }, {
     end,
 })
 
+-- Before every write: re-affirm unix format (prevents plugins from
+-- flipping it back to dos after the BufReadPost autocmd).
+vim.api.nvim_create_autocmd('BufWritePre', {
+    group = force_lf_au,
+    pattern = '*',
+    callback = function()
+        vim.bo.fileformat = 'unix'
+    end,
+})
+
 -- Indentation
--- 4-space indent, hard tabs expanded. `textwidth` at 80 enables `gq`
--- paragraph formatting; actual wrapping is off (`wrap = false`).
+-- 4-space indent, hard tabs expanded. `textwidth` at 80 enables `gq`.
 -- https://neovim.io/doc/user/options.html#'textwidth'
 -- https://neovim.io/doc/user/options.html#'shiftwidth'
 -- https://neovim.io/doc/user/options.html#'tabstop'
@@ -62,24 +76,20 @@ opt.expandtab = true
 opt.wrap = false
 
 -- Gutter
--- Enable the signcolumn so LSP diagnostics, gitsigns changes, and DAP
--- breakpoints are visible in the left gutter. Hiding it saves 2 columns
--- but breaks the IDE experience (you cannot see where errors or breakpoints
--- live without opening the line).
+-- Enable signcolumn so LSP diagnostics, gitsigns, and DAP breakpoints
+-- are visible. Hiding it saves 2 columns but breaks IDE experience.
 -- https://neovim.io/doc/user/options.html#'signcolumn'
 opt.signcolumn = 'yes:2'
 
 -- Python Tooling
--- LazyVim reads these globals to decide which LSP and linter to
--- configure in the `lang.python` extra.
+-- LazyVim reads these globals to decide LSP and linter in `lang.python`.
 -- https://lazyvim.github.io/extras/lang/python
 g.lazyvim_python_lsp = 'basedpyright'
 g.lazyvim_python_ruff = 'ruff'
 
 -- Windows — PowerShell as default shell
--- Neovim on Windows defaults to cmd.exe. PowerShell provides a
--- POSIX-like experience (piping, environment variables, exit codes).
--- These flags mirror the recommendation from :help shell-powershell.
+-- Neovim on Windows defaults to cmd.exe. PowerShell provides POSIX-like
+-- piping and exit codes. Mirrors :help shell-powershell.
 -- https://neovim.io/doc/user/options.html#'shell'
 if is_win then
     opt.shell = 'pwsh'
