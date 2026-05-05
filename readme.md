@@ -1,5 +1,6 @@
 # nvim-config
 
+[![CI](https://github.com/e-gleba/nvim-config/actions/workflows/ci.yml/badge.svg)](https://github.com/e-gleba/nvim-config/actions/workflows/ci.yml)
 [![Neovim](https://img.shields.io/badge/Neovim-0.10%2B-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Lua](https://img.shields.io/badge/Lua-5.1-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](license.md)
@@ -31,12 +32,12 @@ Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 scoop install neovim git cmake ninja llvm fzf fd ripgrep lazygit
 
 # env (run once)
-[Environment]::SetEnvironmentVariable("LLDB_USE_NATIVE_PDB_READER", "1", "User")
+[Environment]::SetEnvironmentVariable(\"LLDB_USE_NATIVE_PDB_READER\", \"1\", \"User\")
 git config --global core.autocrlf false
 git config --global core.eol lf
 
 # config
-git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\\nvim
+git clone https://github.com/e-gleba/nvim-config.git $env:LOCALAPPDATA\\\\nvim
 nvim
 ```
 
@@ -44,16 +45,16 @@ nvim
 
 ### Docker (Linux x86_64)
 ```bash
-docker run -it --rm \
-  -v $(pwd):/workspace \
-  -v ~/.config/nvim:/root/.config/nvim \
+docker run -it --rm \\\
+  -v $(pwd):/workspace \\\
+  -v ~/.config/nvim:/root/.config/nvim \\\
   ghcr.io/e-gleba/nvim-config/nvim-ci:latest
 ```
 
 ## First run
 ```bash
 nvim --headless -V1 -c 'checkhealth' -c 'qa'   # verify
-nvim --headless "+Lazy! sync" +qa                # force sync
+nvim --headless \"+Lazy! sync\" +qa                # force sync
 ```
 
 ## CI & Release
