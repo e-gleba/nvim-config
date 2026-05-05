@@ -25,6 +25,19 @@ This guide shows the **simplest, most reliable path** for every OS combination.
 
 ---
 
+## Path Cheat Sheet — Windows Users Read This First
+
+| Shell / Environment | `~` expands to | `~/.ssh/` equivalent | Recommended? |
+|---|---|---|---|
+| **WSL2 (Ubuntu)** | `/home/<you>` | `/home/<you>/.ssh/` | **Yes** — best for dev |
+| **Git Bash** | `/c/Users/<you>` | `/c/Users/<you>/.ssh/` | OK — limited |
+| **PowerShell** | ❌ **Not supported** | `$env:USERPROFILE\.ssh\` | Minimal |
+| **CMD** | ❌ **Not supported** | `%USERPROFILE%\.ssh\` | Avoid |
+
+> **Rule of thumb:** If your local machine is Windows, run all SSH and terminal commands inside **WSL2**. Every code block in this guide uses POSIX paths (`~/.ssh/...`, `~/project`) and assumes a POSIX shell. WSL2 gives you that natively. If you must use PowerShell, translate `~/.ssh/` → `$env:USERPROFILE\.ssh\`.
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -66,10 +79,12 @@ Pick your **local** OS (rows) and **remote** OS (columns). Each cell tells you t
 |---|---|---|---|
 | **🍎 macOS** | `ssh` + `tmux` | `ssh` + `tmux` | `ssh` + `tmux` |
 | **🐧 Linux** | `ssh` + `tmux` | `ssh` + `tmux` | `ssh` + `tmux` |
+| **🪟 Windows (WSL2)** | `ssh` + `tmux` from WSL2 | `ssh` + `tmux` from WSL2 | `ssh` into sibling WSL2 |
 | **🪟 Windows (PowerShell)** | `ssh` + `tmux` via Windows Terminal | `ssh` + `tmux` via Windows Terminal | `ssh` + `tmux` into WSL2 |
-| **🪟 Windows (WSL2)** | `ssh` + `tmux` from WSL | `ssh` + `tmux` from WSL | `ssh` into sibling WSL |
 
 **The answer is always `ssh` + `tmux`.** Every OS ships an SSH client. No plugins required. No port forwarding. No GUI forwarding latency. tmux survives Wi-Fi drops and laptop sleeps.
+
+> **Recommendation:** If your local machine is Windows, install Windows Terminal and default to a **WSL2** tab. All commands in this guide will work verbatim. PowerShell works for basic `ssh`, but tmux key chords (`Ctrl+b`, `$`, `%`) and Unicode fonts render better under WSL2 inside Windows Terminal.
 
 ---
 
@@ -124,9 +139,19 @@ tmux -V
 ssh -V
 ```
 
-### 🪟 Windows Native (PowerShell)
+### 🪟 Windows Local — Recommended Path (WSL2)
 
-Use **Windows Terminal** + **PowerShell** or **WSL2**. Native Windows SSH client is sufficient for the local side; you do **not** need PuTTY.
+1. Install [WSL2](https://learn.microsoft.com/windows/wsl/install) and Ubuntu:
+   ```powershell
+   wsl --install -d Ubuntu
+   ```
+2. Open **Windows Terminal** → Ubuntu tab.
+3. Run the 🐧 Ubuntu section above inside WSL2.
+4. Done. All commands in this guide now work verbatim.
+
+### 🪟 Windows Local — Minimal Path (PowerShell / Native)
+
+Only if you cannot use WSL2.
 
 ```powershell
 # 1. Ensure OpenSSH client is installed (Windows 10 1809+ ships it)
@@ -135,11 +160,13 @@ Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
 # If "NotPresent", install:
 Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
 
-# 2. Windows Terminal (Microsoft Store) recommended for Unicode / tmux key chords
+# 2. Install Windows Terminal (Microsoft Store) for Unicode / tmux key chords
 
 # 3. Verify
 ssh -V
 ```
+
+> **Note:** Native Windows lacks `ssh-copy-id`, `nmap`, and `tmux`. If you choose this path, install [Git for Windows](https://git-scm.com/download/win) (provides Git Bash with `ssh-keygen`, `scp`) and [nmap](https://nmap.org/download.html) separately, or switch to WSL2.
 
 ---
 
@@ -171,7 +198,10 @@ Run **on the remote machine** (the one you will SSH into):
 **Verify reachability from the local machine:**
 
 ```bash
-ping -c 4 192.168.1.42    # macOS / Linux
+ping -c 4 192.168.1.42    # macOS / Linux / WSL2
+```
+
+```powershell
 ping -n 4 192.168.1.42    # Windows PowerShell
 ```
 
@@ -235,7 +265,7 @@ Set-Service -Name sshd -StartupType 'Automatic'
 
 ## Phase 3 — First Connection & Passwordless Auth
 
-All commands below run on the **local machine**.
+All commands below run on the **local machine**. If you are on Windows, run them inside **WSL2** unless noted.
 
 ### Step 3.1 — First login (password)
 
@@ -252,6 +282,7 @@ Type `yes` when asked to trust the host fingerprint. Enter the remote user's pas
 ### Step 3.2 — Generate an SSH key (once per local machine)
 
 ```bash
+# macOS / Linux / WSL2
 ssh-keygen -t ed25519 -f ~/.ssh/id_devbox -N ""
 ```
 
@@ -259,18 +290,39 @@ This creates:
 - `~/.ssh/id_devbox` — private key (never leaves this machine)
 - `~/.ssh/id_devbox.pub` — public key (safe to copy anywhere)
 
+> **Windows PowerShell users:** Run this inside WSL2, or use Git Bash. Native PowerShell `ssh-keygen` without `-f` writes to `$env:USERPROFILE\.ssh\id_ed25519` by default. If you must use PowerShell, omit `-f ~/.ssh/id_devbox` and let it use the default path.
+
 ### Step 3.3 — Copy the public key to the remote
 
 ```bash
+# macOS / Linux / WSL2 (ssh-copy-id is available)
 ssh-copy-id -i ~/.ssh/id_devbox.pub your_username@192.168.1.42
 ```
+
+**Windows PowerShell — `ssh-copy-id` does not exist.** Use this manual equivalent:
+
+```powershell
+# Run in PowerShell
+$remoteUser = "your_username"
+$remoteIp   = "192.168.1.42"
+$pubKey     = Get-Content "$env:USERPROFILE\.ssh\id_devbox.pub"
+ssh "$remoteUser@$remoteIp" "mkdir -p ~/.ssh && echo '$pubKey' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+```
+
+> The manual pipe creates `~/.ssh/authorized_keys` on the **remote** (which is a Linux/macOS machine, so `~` works there).
 
 Re-enter the remote password one final time.
 
 ### Step 3.4 — Verify passwordless login
 
 ```bash
+# macOS / Linux / WSL2
 ssh -i ~/.ssh/id_devbox your_username@192.168.1.42 echo "auth_ok"
+```
+
+```powershell
+# Windows PowerShell (if you used the default path in Step 3.2)
+ssh -i "$env:USERPROFILE\.ssh\id_devbox" your_username@192.168.1.42 echo "auth_ok"
 ```
 
 Expected output: `auth_ok` with no password prompt.
@@ -279,7 +331,26 @@ Expected output: `auth_ok` with no password prompt.
 
 ## Phase 4 — SSH Config (never type the IP again)
 
-On the **local machine**, create or edit `~/.ssh/config`:
+On the **local machine**, create or edit the SSH client config file.
+
+### macOS / Linux / WSL2
+
+```bash
+mkdir -p ~/.ssh
+nano ~/.ssh/config
+# paste below, save (Ctrl+O, Enter, Ctrl+X)
+```
+
+### Windows PowerShell
+
+```powershell
+$configDir = "$env:USERPROFILE\.ssh"
+New-Item -ItemType Directory -Force -Path $configDir
+notepad "$configDir\config"
+# paste below, save
+```
+
+### Config contents (all platforms)
 
 ```ssh-config
 Host devbox
@@ -291,6 +362,8 @@ Host devbox
     ServerAliveCountMax 3
     TCPKeepAlive yes
 ```
+
+> **Windows PowerShell note:** If you used the default key path in Step 3.2, change `IdentityFile` to `C:\Users\<you>\.ssh\id_ed25519`.
 
 > **Field reference:**
 > - `Host` — your alias. Any word you like (`mac-build`, `wsl-pc`, `linux-nuc`).
@@ -326,6 +399,8 @@ tmux new -s cpp
 nvim .
 ```
 
+> **Windows PowerShell note:** `~` is your remote home, so it works inside the SSH session. Before SSH, if you need to reference a local path, use `$env:USERPROFILE\Documents` instead of `~`.
+
 ### Step 5.2 — Inside Neovim (remote)
 
 All LSP, clangd, CMake, and builds run **on the remote natively**:
@@ -340,6 +415,22 @@ All LSP, clangd, CMake, and builds run **on the remote natively**:
 " Open terminal inside nvim
 :term
 ```
+
+### C++ LSP note — compile_commands.json
+
+`clangd` on the remote needs `compile_commands.json` at the project root:
+
+```bash
+# Inside the remote project directory
+ln -s build/compile_commands.json compile_commands.json
+```
+
+Or ensure your `CMakeLists.txt` contains:
+```cmake
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+```
+
+Without this, clangd will not resolve standard headers or find `#include` paths.
 
 ### Step 5.3 — Detach and re-attach (the magic)
 
@@ -364,18 +455,47 @@ All LSP, clangd, CMake, and builds run **on the remote natively**:
 
 ---
 
-## Phase 6 — Cross-Network & WAN (Tailscale)
+## Phase 6 — Network Scan (if the IP changed)
+
+If the target moved, rebooted, or you forgot the IP, scan your LAN for SSH servers.
+
+### macOS / Linux / WSL2
+
+```bash
+# Install nmap if missing: brew install nmap (macOS), sudo apt install nmap (Linux)
+sudo nmap -p 22 --open 192.168.1.0/24
+```
+
+### Windows PowerShell
+
+```powershell
+# Install nmap via winget or choco, then run in PowerShell
+nmap -p 22 --open 192.168.1.0/24
+```
+
+Every line with `22/tcp open ssh` is a candidate machine. Match the MAC address from `ip link` (Linux) or `ifconfig` (macOS) on the target with the nmap output to confirm.
+
+---
+
+## Phase 7 — Cross-Network & WAN (Tailscale)
 
 If the machines are **not on the same Wi-Fi** (different rooms with isolated VLANs, different cities, coffee shop → home), use Tailscale. It creates a zero-config encrypted mesh VPN.
 
 ### Install on **both** machines
 
+**macOS / Linux / WSL2:**
 ```bash
 curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up
 ```
 
-Authenticate in the browser link printed by the command.
+**Windows (native):**
+```powershell
+winget install tailscale
+# or download from https://tailscale.com/download/windows
+```
+
+Authenticate in the browser link printed by the command (or shown in the Tailscale GUI on Windows).
 
 ### Get the stable Tailscale IP
 
@@ -385,11 +505,11 @@ On the **remote** machine:
 tailscale ip -4
 ```
 
-Output looks like `100.64.123.45`. This IP never changes.
+Output looks like `100.64.123.45`. This IP never changes, even if the physical network changes.
 
 ### Update SSH config
 
-Edit `~/.ssh/config` on the local machine:
+Edit your local SSH config (see Phase 4 for path per OS):
 
 ```ssh-config
 Host devbox
@@ -406,7 +526,7 @@ Host devbox
 
 ---
 
-## Phase 7 — Optional: GUI Local UI with Remote Server
+## Phase 8 — Optional: GUI Local UI with Remote Server
 
 If you want **local font rendering**, **native clipboard**, or a **GUI Neovim wrapper** (e.g., Neovide) while still running the editor core remotely:
 
@@ -439,13 +559,15 @@ Usage:
 ```
 
 Under the hood:
-1. SSH into the target
-2. Download Neovim AppImage if missing
-3. `rsync` your `~/.config/nvim` to the remote
-4. Start headless `nvim --listen` on the remote
-5. Pipe UI events over SSH
+1. Plugin SSHes into the target
+2. Downloads Neovim release if missing
+3. `rsync` your local `~/.config/nvim` to the remote
+4. Starts headless `nvim --listen` on the remote
+5. Connects your local UI to it
 
-### Option B: `neovide` + `nvr` (manual, advanced)
+> **Windows note:** `remote-nvim.nvim` requires a POSIX environment. Run Neovim inside **WSL2** or Git Bash on Windows.
+
+### Option B: `neovide` + socket tunnel (manual, advanced)
 
 On the remote, inside tmux:
 
@@ -481,11 +603,11 @@ flowchart TD
     B -->|Connection refused| C[SSH server not running]
     C --> D[Re-run Phase 2 on remote]
     B -->|No route to host| E[Wrong IP or different subnet]
-    E --> F[Re-run Phase 1 or switch to Tailscale Phase 6]
+    E --> F[Re-run Phase 1 or switch to Tailscale Phase 7]
     B -->|Permission denied publickey| G[Key not accepted]
-    G --> H[ssh-copy-id again or check ~/.ssh/config IdentityFile path]
+    G --> H[ssh-copy-id again or check SSH config IdentityFile path]
     B -->|Works but freezes after idle| I[Keepalive too long]
-    I --> J[Add ServerAliveInterval 30 to ~/.ssh/config]
+    I --> J[Add ServerAliveInterval 30 to SSH config]
     B -->|Works| K[Success]
 ```
 
@@ -494,12 +616,14 @@ flowchart TD
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | `Connection refused` | sshd not started | `sudo systemctl start ssh` or `sudo service ssh start` |
-| `Permission denied (publickey)` | Key not on remote | Re-run `ssh-copy-id` from Phase 3.3 |
-| `No route to host` | IP changed / different VLAN | Re-run Phase 1, or use Tailscale Phase 6 |
+| `Permission denied (publickey)` | Key not on remote | Re-run Phase 3.3 (or manual PowerShell equivalent) |
+| `No route to host` | IP changed / different VLAN | Re-run Phase 1, or use Tailscale Phase 7 |
 | `bind: Address already in use` | tmux session name taken | `tmux ls` then attach, or `tmux kill-session -t cpp` |
 | `cmake: command not found` on remote | Tools not installed | Run Phase 0 prerequisites on the **remote** |
-| `clangd: missing standard headers` | Running on wrong OS | Ensure Neovim is running **on the target OS**, not locally. LSP must see the target's sysroot. |
+| `clangd: missing standard headers` | Missing `compile_commands.json` or running on wrong OS | Ensure `compile_commands.json` exists (Phase 5.2). Ensure Neovim runs **on the target OS**. |
 | tmux shows `0:bash*` but nvim is gone | Process crashed OOM | Check `dmesg` on remote for OOM killer; increase swap or reduce parallelism. |
+| `~/.ssh/config not found` on Windows | Wrong path | Use `$env:USERPROFILE\.ssh\config` in PowerShell, or switch to WSL2. |
+| `ssh-copy-id: command not found` | Windows native shell | Use PowerShell manual command from Phase 3.3. |
 
 ---
 
@@ -562,7 +686,7 @@ All 10 checks green? You are ready.
 | Neovim remote plugins | [remote-nvim.nvim](https://github.com/amitds1997/remote-nvim.nvim) |
 | Neovide (GUI) | [neovide.dev](https://neovide.dev/) |
 | LazyVim ssh issue | [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581) |
-| Existing repo docs | [ssh_remote_dev.md](ssh_remote_dev.md), [remote_nvim_workflow.md](remote_nvim_workflow.md) |
+| WSL2 install | [Microsoft Docs](https://learn.microsoft.com/windows/wsl/install) |
 
 ---
 

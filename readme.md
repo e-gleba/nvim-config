@@ -45,9 +45,9 @@ nvim
 
 ### Docker (Linux x86_64)
 ```bash
-docker run -it --rm \\\
-  -v $(pwd):/workspace \\\
-  -v ~/.config/nvim:/root/.config/nvim \\\
+docker run -it --rm \\
+  -v $(pwd):/workspace \\
+  -v ~/.config/nvim:/root/.config/nvim \\
   ghcr.io/e-gleba/nvim-config/nvim-ci:latest
 ```
 
@@ -71,8 +71,7 @@ nvim --headless \"+Lazy! sync\" +qa                # force sync
 ## Remote Development
 
 Work on your laptop, build on a remote Mac or WSL box:
-- [SSH Setup Guide](docs/ssh_remote_dev.md) — connect to the machine
-- [Remote Neovim Workflow](docs/remote_nvim_workflow.md) — run nvim on the remote, generate Xcode projects, build
+- [Remote Development Master Guide](docs/remote_development_master_guide.md) — SSH setup, cross-platform matrix, tmux + Neovim persistent sessions, Tailscale fallback, and troubleshooting
 
 ## Structure
 
