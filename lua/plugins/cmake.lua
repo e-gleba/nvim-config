@@ -8,31 +8,6 @@
 --   https://github.com/Civitasv/cmake-tools.nvim/blob/main/docs/cmake_presets.md
 --   https://github.com/Civitasv/cmake-tools.nvim/blob/main/docs/howto.md
 
----Detect whether the current cwd or file lives inside a CMake project.
----@return boolean
-local function is_cmake_project()
-    local markers = { 'CMakeLists.txt', 'CMakePresets.json' }
-    local paths = { vim.loop.cwd(), vim.fn.expand('%:p:h') }
-    for _, base in ipairs(paths) do
-        local dir = base
-        while
-            dir
-            and dir ~= '/'
-            and dir ~= ''
-            and not dir:match('^%a:[/\\]?$')
-        do
-            for _, marker in ipairs(markers) do
-                local ok, stat = pcall(vim.loop.fs_stat, dir .. '/' .. marker)
-                if ok and stat then
-                    return true
-                end
-            end
-            dir = vim.fn.fnamemodify(dir, ':h')
-        end
-    end
-    return false
-end
-
 ---@type string[][] -- { suffix, command, label }
 local mappings = {
     { 'g', 'CMakeGenerate', 'Generate' },
@@ -69,28 +44,6 @@ local keys = vim.iter(mappings)
 return {
     {
         'Civitasv/cmake-tools.nvim',
-        cond = is_cmake_project,
-        cmd = {
-            'CMakeGenerate',
-            'CMakeBuild',
-            'CMakeRun',
-            'CMakeDebug',
-            'CMakeClean',
-            'CMakeStop',
-            'CMakeSelectConfigurePreset',
-            'CMakeSelectBuildPreset',
-            'CMakeSelectBuildTarget',
-            'CMakeSelectLaunchTarget',
-            'CMakeSelectBuildType',
-            'CMakeSelectKit',
-            'CMakeOpen',
-            'CMakeClose',
-            'CMakeSettings',
-            'CMakeTest',
-            'CMakeShowTargetFiles',
-            'CMakeQuickBuild',
-            'CMakeCopyCompileCommands',
-        },
         ft = 'cmake',
         keys = keys,
         dependencies = { 'nvim-lua/plenary.nvim' },

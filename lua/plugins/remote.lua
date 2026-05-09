@@ -20,8 +20,6 @@ return {
                                     '--exclude=.gitignore',
                                     '--exclude=.github',
                                     '--exclude=docs',
-                                    '--exclude=lazy-lock.json',
-                                    '--exclude=lazyvim.json',
                                     '--exclude=node_modules',
                                     '--exclude=.cache',
                                 },
