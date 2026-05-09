@@ -1,0 +1,11 @@
+{
+    "copy_exclude": [
+        ".git",
+        ".gitignore",
+        ".github",
+        "docs",
+        "lazy-lock.json",
+        "node_modules",
+        ".cache"
+    ]
+}
