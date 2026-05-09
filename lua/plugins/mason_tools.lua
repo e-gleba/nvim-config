@@ -12,7 +12,7 @@ return {
             'clangd',
             'clang-format',
             'codelldb',
-            'cmake-language-server',
+            'neocmakelsp',
         },
         run_on_start = true,
     },
