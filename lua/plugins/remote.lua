@@ -27,6 +27,11 @@ return {
                                 },
                             },
                         },
+                        data = {
+                            base = vim.fn.stdpath('data'),
+                            dirs = {}, -- ← НИЧЕГО из data не копируем
+                            compression = { enabled = true },
+                        },
                     },
                 },
             })
