@@ -201,7 +201,7 @@ Run **on the remote machine** (the one you will SSH into):
 </tr>
 <tr>
 <td>🐧 Linux / WSL2</td>
-<td><code>hostname -I | awk '{print $1}'</code></td>
+<td><code>hostname -i | awk '{print $1}'</code></td>
 <td><code>192.168.1.42</code></td>
 </tr>
 <tr>
