@@ -8,6 +8,28 @@ return {
             'MunifTanjim/nui.nvim',
             'nvim-telescope/telescope.nvim',
         },
-        config = true,
+        config = function()
+            require('remote-nvim').setup({
+                remote = {
+                    copy_dirs = {
+                        config = {
+                            compression = {
+                                enabled = true,
+                                additional_opts = {
+                                    '--exclude=.git',
+                                    '--exclude=.gitignore',
+                                    '--exclude=.github',
+                                    '--exclude=docs',
+                                    '--exclude=lazy-lock.json',
+                                    '--exclude=lazyvim.json',
+                                    '--exclude=node_modules',
+                                    '--exclude=.cache',
+                                },
+                            },
+                        },
+                    },
+                },
+            })
+        end,
     },
 }
