@@ -773,3 +773,9 @@ security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN
 cp /usr/bin/true /tmp/MyTrue
 codesign -s "YOUR_IDENTITY" -f /tmp/MyTrue
 ```
+
+### Important reconnect note (if host name persists, but ssh and ping continue using old ip and fails cuz not exists any more):
+
+```sh
+ssh -i ~/.ssh/id_devbox your_name@<raw_ip_not_host>
+```
