@@ -754,3 +754,22 @@ All 10 checks green? You are ready.
 ## One-Line Summary
 
 > `ssh devbox` → `tmux attach -t cpp`. That's it. Everything else is optimization.
+
+### Mac note (codesign access):
+
+```sh
+# Replace with your actual login password
+KEYCHAIN_PASS="your_password"
+KEYCHAIN="$HOME/Library/Keychains/login.keychain-db"
+
+# 1. Unlock the keychain
+security unlock-keychain -p "$KEYCHAIN_PASS" "$KEYCHAIN"
+
+## NEXT STEPS ARE OPTIONAL, BUT U NEED TO TYPE #1 EACH TIME IF THE FOLLOWING NOT EXECUTED, SEE UR SECURITY POLICY
+# 2. Set partition list so codesign works without GUI
+security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASS" "$KEYCHAIN"
+
+# 3. Test
+cp /usr/bin/true /tmp/MyTrue
+codesign -s "YOUR_IDENTITY" -f /tmp/MyTrue
+```
