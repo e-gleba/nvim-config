@@ -779,3 +779,11 @@ codesign -s "YOUR_IDENTITY" -f /tmp/MyTrue
 ```sh
 ssh -i ~/.ssh/id_devbox your_name@<raw_ip_not_host>
 ```
+
+### Worth adding to maco os for ios builds (to `~/.zshrc`):
+
+```sh
+if [ -n "$SSH_CONNECTION" ]; then
+    security unlock-keychain ~/Library/Keychains/login.keychain-db
+fi
+```
