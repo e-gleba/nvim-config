@@ -1,9 +1,3 @@
--- lua/plugins/asmview.lua
--- Assembly / IR viewer via godbolt.nvim — local Compiler Explorer functionality.
--- Replaces ~400 lines of hand-rolled compile_commands.json parsing with a mature
--- plugin that auto-detects flags, provides bidirectional line mapping, and includes
--- an LLVM optimization pipeline viewer.
---
 -- Plugin repo : https://github.com/lanza/vim-godbolt
 -- Documentation : https://github.com/lanza/vim-godbolt#readme
 -- compile_commands.json setup :
