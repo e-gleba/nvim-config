@@ -70,22 +70,25 @@ end
 if vim.env.SSH_TTY then
     vim.opt.clipboard = 'unnamedplus'
 
-    -- Windows Terminal: OSC 52 copy works, paste doesn't.
-    -- Fallback paste: use the default register content instead
-    -- (or just right-click paste via terminal)
-    local function paste()
-        return vim.split(vim.fn.getreg('"'), '\n')
+    local osc52 = require('vim.ui.clipboard.osc52')
+
+    -- Terminals that support OSC 52 *read* (paste)
+    local term = vim.env.TERM_PROGRAM or ''
+    local can_osc52_paste = term == 'ghostty' or term == 'kitty'
+
+    local function local_paste()
+        return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') }
     end
 
     vim.g.clipboard = {
         name = 'OSC 52',
         copy = {
-            ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-            ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+            ['+'] = osc52.copy('+'),
+            ['*'] = osc52.copy('*'),
         },
         paste = {
-            ['+'] = paste,
-            ['*'] = paste,
+            ['+'] = can_osc52_paste and osc52.paste('+') or local_paste,
+            ['*'] = can_osc52_paste and osc52.paste('*') or local_paste,
         },
     }
 end

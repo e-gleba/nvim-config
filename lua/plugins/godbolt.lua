@@ -25,23 +25,19 @@ return {
         },
         ft = { 'c', 'cpp', 'objc', 'objcpp' },
         opts = {
-            -- Line mapping: bidirectional source ↔ assembly/LLVM IR sync.
-            -- Default: enabled=true, auto_scroll=false, throttle_ms=150.
-            -- We enable auto_scroll so the opposite pane tracks the cursor.
-            -- Ref: https://github.com/lanza/vim-godbolt#line-mapping-godbolt-style
+            compile_commands = {
+                enabled = true,
+                auto_detect = true,
+            },
             line_mapping = {
                 enabled = true,
                 auto_scroll = true,
                 throttle_ms = 150,
             },
-            -- Display: clean metadata stripping + variable name annotations.
-            -- Ref: https://github.com/lanza/vim-godbolt#display-configuration
             display = {
                 strip_debug_metadata = true,
                 annotate_variables = true,
             },
-            -- Pipeline viewer: step through LLVM optimization passes.
-            -- Ref: https://github.com/lanza/vim-godbolt#llvm-optimization-pipeline-viewer
             pipeline = {
                 enabled = true,
                 show_stats = true,

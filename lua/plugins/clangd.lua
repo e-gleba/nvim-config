@@ -15,40 +15,6 @@ return {
         'dchinmay2/clangd_extensions.nvim',
         name = 'clangd_extensions.nvim',
         ft = { 'c', 'cpp', 'objc', 'objcpp' },
-        ---@type ClangdExt.Opts
-        opts = {
-            ast = {
-                -- Icons below use Unicode Geometric Shapes / Misc Symbols so
-                -- they render correctly in any standard monospace font without
-                -- requiring a Nerd Font patchset.
-                role_icons = {
-                    type = '◆',
-                    declaration = '◇',
-                    expression = '●',
-                    specifier = '▸',
-                    statement = '■',
-                    ['template argument'] = '◊',
-                },
-                kind_icons = {
-                    Compound = '◇',
-                    Recovery = '⚠',
-                    TranslationUnit = '◎',
-                    PackExpansion = '⋯',
-                    TemplateTypeParm = '◊',
-                    TemplateTemplateParm = '◊',
-                    TemplateParamObject = '◊',
-                },
-                highlights = {
-                    detail = 'Comment',
-                },
-            },
-            memory_usage = {
-                border = 'rounded',
-            },
-            symbol_info = {
-                border = 'rounded',
-            },
-        },
     },
 
     -- Hardened clangd server flags.
@@ -91,15 +57,16 @@ return {
                     cmd = {
                         'clangd',
                         '--background-index',
-                        '--suggest-missing-includes',
+                        '--background-index-priority=low',
                         '--clang-tidy',
                         '--header-insertion=iwyu',
                         '--header-insertion-decorators',
                         '--all-scopes-completion',
                         '--completion-style=detailed',
-                        '--cross-file-rename',
+                        '--function-arg-placeholders',
+                        '--fallback-style=llvm',
                         '--log=error',
-                        '--j=4',
+                        '-j=4',
                     },
                     init_options = {
                         clangdFileStatus = true, -- Provides information about activity on clangd’s per-file worker thread

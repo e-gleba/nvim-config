@@ -1,46 +1,28 @@
----@type LazyPluginSpec[]
 return {
     {
-        -- android-nvim-plugin provides IDE-level Android and iOS workflows inside Neovim:
-        -- build, deploy, logcat, device management, Gradle task browser, and run configs.
-        -- It auto-detects project type (Android, iOS, KMP, JVM) so the same plugin works
-        -- across mobile stacks. We only load it when Android/Gradle project markers exist.
+        -- IDE-level Android/iOS/KMP/JVM workflows in Neovim: build, deploy,
+        -- logcat, device management, Gradle task browser, run configs.
         -- https://github.com/iamironz/android-nvim-plugin
         'iamironz/android-nvim-plugin',
         name = 'android',
-        -- Only register this plugin spec when inside an Android/Gradle/iOS workspace.
-        -- This keeps keymaps, commands, and filetype hooks completely hidden in pure
-        -- desktop C++ projects. If you :cd into an Android project after startup,
-        -- restart Neovim from that directory for the plugin to register.
+        main = 'android', -- lets lazy.nvim auto-call require('android').setup(opts)
+
+        -- Only register in an Android/Gradle/iOS workspace. vim.fs.root (0.10+)
+        -- searches upward from the current file and falls back to cwd for
+        -- unnamed buffers — replacing the old manual marker loop.
         cond = function()
-            local markers = {
-                'build.gradle',
-                'build.gradle.kts',
+            return vim.fs.root(0, {
                 'settings.gradle',
                 'settings.gradle.kts',
+                'build.gradle',
+                'build.gradle.kts',
                 'AndroidManifest.xml',
                 'gradlew',
                 '.android.nvim.json',
-            }
-            -- Search upward from current working directory
-            for _, marker in ipairs(markers) do
-                if vim.fn.findfile(marker, '.;') ~= '' then
-                    return true
-                end
-            end
-            -- Search upward from the current file's directory (for `nvim path/to/file` outside project root)
-            local bufname = vim.api.nvim_buf_get_name(0)
-            if bufname ~= '' then
-                local dir = vim.fn.fnamemodify(bufname, ':h')
-                for _, marker in ipairs(markers) do
-                    if vim.fn.findfile(marker, dir .. ';') ~= '' then
-                        return true
-                    end
-                end
-            end
-            return false
+            }) ~= nil
         end,
-        -- Lazy-load on first Android command invocation; cond must pass first
+
+        -- Load on first Android command, or when opening Gradle-ecosystem files.
         cmd = {
             'AndroidMenu',
             'AndroidRun',
@@ -59,13 +41,10 @@ return {
             'AndroidIOSBuild',
             'AndroidIOSDeploy',
         },
-        -- Also load when opening Gradle-ecosystem source files
         ft = { 'java', 'kotlin', 'groovy' },
+
         ---@type android.Opts
         opts = {
-            -- Use upstream defaults; only disable built-in keymaps so Lazy.nvim owns them.
-            -- Default upstream config:
-            -- https://github.com/iamironz/android-nvim-plugin/blob/main/lua/android/config.lua
             sdk = {
                 root_env_keys = { 'ANDROID_SDK_ROOT', 'ANDROID_HOME' },
                 local_properties = true,
@@ -78,62 +57,8 @@ return {
                 autosave = true,
                 restore_logcat = true,
             },
-            keymaps = {
-                enabled = false,
-            },
-        },
-        config = function(_, opts)
-            require('android').setup(opts)
-        end,
-        keys = {
-            {
-                '<leader>am',
-                '<cmd>AndroidMenu<cr>',
-                desc = 'Android: Menu',
-            },
-            {
-                '<leader>ab',
-                '<cmd>AndroidBuild<cr>',
-                desc = 'Android: Build',
-            },
-            {
-                '<leader>ar',
-                '<cmd>AndroidRun<cr>',
-                desc = 'Android: Run',
-            },
-            {
-                '<leader>ad',
-                '<cmd>AndroidSelectDevice<cr>',
-                desc = 'Android: Device',
-            },
-            {
-                '<leader>aM',
-                '<cmd>AndroidSelectModule<cr>',
-                desc = 'Android: Module',
-            },
-            {
-                '<leader>al',
-                '<cmd>AndroidLogcat<cr>',
-                desc = 'Android: Logcat',
-            },
-            {
-                '<leader>ax',
-                '<cmd>AndroidStop<cr>',
-                desc = 'Android: Stop',
-            },
-        },
-    },
-    {
-        'folke/which-key.nvim',
-        optional = true,
-        opts = {
-            spec = {
-                {
-                    '<leader>a',
-                    group = 'Android',
-                    icon = { icon = '', color = 'green' },
-                },
-            },
+            -- Disable upstream keymaps so lazy.nvim owns them (see `keys`).
+            keymaps = { enabled = false },
         },
     },
 }
