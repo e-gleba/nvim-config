@@ -53,56 +53,5 @@ return {
                 show_stats = true,
             },
         },
-        keys = {
-            -- Toggle assembly view for the current buffer.
-            -- Forces output="asm" so we always get assembly (not LLVM IR).
-            -- Ref: https://github.com/lanza/vim-godbolt#lua-api
-            {
-                '<leader>caa',
-                function()
-                    require('godbolt').godbolt('', { output = 'asm' })
-                end,
-                desc = 'ASM: Toggle',
-                ft = { 'c', 'cpp', 'objc', 'objcpp' },
-            },
-            -- Refresh / reuse the existing assembly window.
-            -- Bang (!) reuses the last assembly window for the current source buffer.
-            -- Ref: https://github.com/lanza/vim-godbolt#basic-compilation
-            {
-                '<leader>car',
-                '<cmd>Godbolt!<cr>',
-                desc = 'ASM: Refresh',
-                ft = { 'c', 'cpp', 'objc', 'objcpp' },
-            },
-            -- Open the LLVM optimization pipeline viewer.
-            -- Ref: https://github.com/lanza/vim-godbolt#pipeline-viewer
-            {
-                '<leader>cap',
-                '<cmd>GodboltPipeline<cr>',
-                desc = 'ASM: Pipeline',
-                ft = { 'c', 'cpp', 'objc', 'objcpp' },
-            },
-            -- Show the last compilation command used by Godbolt.
-            -- Useful for debugging compile_commands.json detection.
-            -- Ref: https://github.com/lanza/vim-godbolt#utility-commands
-            {
-                '<leader>cac',
-                '<cmd>GodboltShowCommand<cr>',
-                desc = 'ASM: Show compile command',
-                ft = { 'c', 'cpp', 'objc', 'objcpp' },
-            },
-        },
-    },
-    {
-        'folke/which-key.nvim',
-        opts = {
-            spec = {
-                {
-                    '<leader>ca',
-                    group = 'Assembly',
-                    icon = { icon = '', color = 'red' },
-                },
-            },
-        },
     },
 }
