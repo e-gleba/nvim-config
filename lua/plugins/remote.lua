@@ -1,38 +1,71 @@
--- lua/plugins/remote.lua
+-- remote-nvim.nvim :: Develop inside remote containers/SSH/Docker from Neovim.
+-- https://github.com/amitds1997/remote-nvim.nvim
+
+---@type LazyPluginSpec[]
 return {
     {
-        'amitds1997/remote-nvim.nvim',
+        'https://github.com/amitds1997/remote-nvim.nvim.git',
         version = '*',
         dependencies = {
-            'nvim-lua/plenary.nvim',
-            'MunifTanjim/nui.nvim',
-            'nvim-telescope/telescope.nvim',
+            'https://github.com/nvim-lua/plenary.nvim.git',
+            'https://github.com/MunifTanjim/nui.nvim.git',
+            'https://github.com/nvim-telescope/telescope.nvim.git',
         },
-        config = function()
-            require('remote-nvim').setup({
-                remote = {
-                    copy_dirs = {
-                        config = {
-                            compression = {
-                                enabled = true,
-                                additional_opts = {
-                                    '--exclude=.git',
-                                    '--exclude=.gitignore',
-                                    '--exclude=.github',
-                                    '--exclude=docs',
-                                    '--exclude=node_modules',
-                                    '--exclude=.cache',
-                                },
+        cmd = {
+            'RemoteStart',
+            'RemoteStop',
+            'RemoteInfo',
+            'RemoteCleanup',
+            'RemoteLog',
+            'RemoteConfigDel',
+            'RemoteSavedSessions',
+        },
+        keys = {
+            {
+                '<leader>Rr',
+                '<cmd>RemoteStart<cr>',
+                desc = 'Remote: start session',
+            },
+            {
+                '<leader>Rs',
+                '<cmd>RemoteStop<cr>',
+                desc = 'Remote: stop session',
+            },
+            { '<leader>Ri', '<cmd>RemoteInfo<cr>', desc = 'Remote: info' },
+            {
+                '<leader>Rc',
+                '<cmd>RemoteCleanup<cr>',
+                desc = 'Remote: cleanup',
+            },
+            {
+                '<leader>RS',
+                '<cmd>RemoteSavedSessions<cr>',
+                desc = 'Remote: saved sessions',
+            },
+        },
+        opts = {
+            remote = {
+                copy_dirs = {
+                    config = {
+                        compression = {
+                            enabled = true,
+                            additional_opts = {
+                                '--exclude=.git',
+                                '--exclude=.gitignore',
+                                '--exclude=.github',
+                                '--exclude=docs',
+                                '--exclude=node_modules',
+                                '--exclude=.cache',
                             },
                         },
-                        data = {
-                            base = vim.fn.stdpath('data'),
-                            dirs = {}, -- ← НИЧЕГО из data не копируем
-                            compression = { enabled = true },
-                        },
+                    },
+                    data = {
+                        base = vim.fn.stdpath('data'),
+                        dirs = {}, -- nothing from data is copied
+                        compression = { enabled = true },
                     },
                 },
-            })
-        end,
+            },
+        },
     },
 }

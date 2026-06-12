@@ -1,62 +1,71 @@
--- Options -- loaded automatically before lazy.nvim startup
+-- options.lua :: Neovim options loaded before lazy.nvim startup.
 -- LazyVim defaults: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
--- This file only contains *overrides*. Anything not set here inherits from LazyVim.
+-- This file only contains overrides. Anything not set here inherits from LazyVim.
 
 local opt = vim.opt
 local g = vim.g
 local is_win = vim.fn.has('win32') == 1
 
--- Encoding --
--- `fileencoding` (written to disk) defaults to UTF-8 in Neovim; be explicit.
--- https://neovim.io/doc/user/options.html#'fileencoding'
+-- Encoding -------------------------------------------------------------------
 opt.fileencoding = 'utf-8'
+opt.bomb = false -- never write a BOM; it breaks shebangs, CMake, and many C++ tools
 
--- BOM (Byte Order Mark) -- never write it. BOM breaks shebangs, CMake,
--- and many C++ compilers / LSPs.
--- https://neovim.io/doc/user/options.html#'bomb'
-opt.bomb = false
-
--- Modeline -- disable entirely. A `vim:ff=dos:` modeline in a third-party
--- header silently overrides our line-ending policy.
--- https://neovim.io/doc/user/options.html#'modeline'
+-- Modeline / line endings ----------------------------------------------------
 opt.modeline = false
 opt.modelines = 0
-
 opt.fileformats = 'unix,dos'
 opt.fileformat = 'unix'
 opt.fixendofline = true
 
--- Indentation --
--- 4-space indent, hard tabs expanded. `textwidth` at 80 enables `gq`.
--- https://neovim.io/doc/user/options.html#'textwidth'
--- https://neovim.io/doc/user/options.html#'shiftwidth'
--- https://neovim.io/doc/user/options.html#'tabstop'
--- https://neovim.io/doc/user/options.html#'softtabstop'
--- https://neovim.io/doc/user/options.html#'expandtab'
--- https://neovim.io/doc/user/options.html#'wrap'
+-- Indentation ----------------------------------------------------------------
 opt.textwidth = 80
 opt.shiftwidth = 4
 opt.tabstop = 4
 opt.softtabstop = 4
 opt.expandtab = true
 opt.wrap = false
+opt.smartindent = true
+opt.cindent = true
+opt.cinoptions = ':0,l1,g0,t0,(0,W4'
 
--- Gutter --
--- Enable signcolumn so LSP diagnostics, gitsigns, and DAP breakpoints
--- are visible. Hiding it saves 2 columns but breaks IDE experience.
--- https://neovim.io/doc/user/options.html#'signcolumn'
+-- Gutter ---------------------------------------------------------------------
 opt.signcolumn = 'yes:2'
+opt.number = true
+opt.relativenumber = true
+opt.cursorline = true
+opt.colorcolumn = '81,121'
 
--- Python Tooling --
--- LazyVim reads these globals to decide LSP and linter in `lang.python`.
--- https://lazyvim.github.io/extras/lang/python
+-- Search ---------------------------------------------------------------------
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
+
+-- Split behavior -------------------------------------------------------------
+opt.splitright = true
+opt.splitbelow = true
+
+-- Scrolling / performance ----------------------------------------------------
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.lazyredraw = false -- disabled; interferes with modern plugins
+opt.ttyfast = true
+
+-- Completion -----------------------------------------------------------------
+opt.completeopt = 'menu,menuone,noselect'
+opt.pumheight = 15
+
+-- Backup / undo / swap -------------------------------------------------------
+opt.undofile = true
+opt.swapfile = false
+opt.backup = false
+opt.writebackup = false
+
+-- Python tooling (LazyVim lang.python extras) --------------------------------
 g.lazyvim_python_lsp = 'basedpyright'
 g.lazyvim_python_ruff = 'ruff'
 
--- Windows -- PowerShell as default shell --
--- Neovim on Windows defaults to cmd.exe. PowerShell provides POSIX-like
--- piping and exit codes. Mirrors :help shell-powershell.
--- https://neovim.io/doc/user/options.html#'shell'
+-- Windows shell: PowerShell --------------------------------------------------
 if is_win then
     opt.shell = 'pwsh'
     opt.shellcmdflag =
@@ -67,12 +76,11 @@ if is_win then
     opt.shellxquote = ''
 end
 
+-- SSH / OSC 52 clipboard -----------------------------------------------------
 if vim.env.SSH_TTY then
-    vim.opt.clipboard = 'unnamedplus'
+    opt.clipboard = 'unnamedplus'
 
     local osc52 = require('vim.ui.clipboard.osc52')
-
-    -- Terminals that support OSC 52 *read* (paste)
     local term = vim.env.TERM_PROGRAM or ''
     local can_osc52_paste = term == 'ghostty' or term == 'kitty'
 

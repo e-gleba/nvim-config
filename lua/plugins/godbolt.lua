@@ -1,29 +1,39 @@
--- Plugin repo : https://github.com/lanza/vim-godbolt
--- Documentation : https://github.com/lanza/vim-godbolt#readme
--- compile_commands.json setup :
+-- vim-godbolt :: disassemble C/C++ inside Neovim via compiler-explorer.com
+-- Plugin:     https://github.com/lanza/vim-godbolt
+-- README:     https://github.com/lanza/vim-godbolt#readme
+-- Wiki:      https://github.com/lanza/vim-godbolt/wiki
+-- Issues:    https://github.com/lanza/vim-godbolt/issues
+--
+-- compile_commands.json auto-detection docs:
 -- https://github.com/lanza/vim-godbolt#auto-detection-from-compile_commandsjson
+
+local M = {}
+
+M.supported_filetypes = { 'c', 'cpp', 'objc', 'objcpp' }
+
+M.commands = {
+    'Godbolt',
+    'GodboltCompiler',
+    'GodboltPipeline',
+    'GodboltLTO',
+    'GodboltLTOPipeline',
+    'GodboltLTOCompare',
+    'GodboltDebug',
+    'GodboltStripOptnone',
+    'GodboltShowCommand',
+    'NextPass',
+    'PrevPass',
+    'GotoPass',
+    'FirstPass',
+    'LastPass',
+}
 
 return {
     {
-        'lanza/vim-godbolt',
+        'https://github.com/lanza/vim-godbolt.git',
         name = 'godbolt',
-        cmd = {
-            'Godbolt',
-            'GodboltCompiler',
-            'GodboltPipeline',
-            'GodboltLTO',
-            'GodboltLTOPipeline',
-            'GodboltLTOCompare',
-            'GodboltDebug',
-            'GodboltStripOptnone',
-            'GodboltShowCommand',
-            'NextPass',
-            'PrevPass',
-            'GotoPass',
-            'FirstPass',
-            'LastPass',
-        },
-        ft = { 'c', 'cpp', 'objc', 'objcpp' },
+        ft = M.supported_filetypes,
+        cmd = M.commands,
         opts = {
             compile_commands = {
                 enabled = true,
