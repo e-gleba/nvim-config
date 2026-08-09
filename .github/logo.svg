@@ -1,21 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <title>Sunset cocktail — nvim-config</title>
+  <title>Golden hour — nvim-config</title>
+  <desc>A low sun sinking into a rocks glass. The drink's surface is the horizon. Shaken at golden hour.</desc>
   <defs>
-    <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7C3AED"/>
-      <stop offset="0.5" stop-color="#EC4899"/>
-      <stop offset="1" stop-color="#FB923C"/>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EF6C1A"/>
+      <stop offset="0.55" stop-color="#D9480F"/>
+      <stop offset="1" stop-color="#A62B04"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFB35C" stop-opacity="0.55"/>
+      <stop offset="0.7" stop-color="#FFB35C" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFB35C" stop-opacity="0"/>
+    </radialGradient>
     <clipPath id="icon">
       <rect width="512" height="512" rx="118"/>
     </clipPath>
+    <clipPath id="submerged">
+      <rect x="208" y="256" width="96" height="48"/>
+    </clipPath>
   </defs>
   <g clip-path="url(#icon)">
-    <rect width="512" height="512" fill="url(#sunset)"/>
-    <circle cx="256" cy="230" r="130" fill="#FFEDD5" opacity="0.18"/>
-    <circle cx="256" cy="230" r="90" fill="#FFEDD5"/>
-    <path d="M158 206 L256 314 L354 206 Z" fill="#FFFFFF"/>
-    <rect x="250" y="308" width="12" height="94" rx="6" fill="#FFFFFF"/>
-    <rect x="200" y="398" width="112" height="16" rx="8" fill="#FFFFFF"/>
+    <rect width="512" height="512" fill="url(#dusk)"/>
+    <circle cx="256" cy="256" r="230" fill="url(#glow)"/>
+    <!-- liquid horizon -->
+    <path d="M176 256 H336" stroke="#FFF6EC" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <!-- sun / ice sphere, half-dipped -->
+    <circle cx="256" cy="256" r="48" fill="#FFF1DA"/>
+    <g clip-path="url(#submerged)">
+      <circle cx="256" cy="256" r="48" fill="#F3BE8C"/>
+    </g>
+    <!-- rocks glass, single monoline weight -->
+    <path d="M152 168 L172 360 Q172 376 188 376 H324 Q340 376 340 360 L360 168"
+          stroke="#FFF6EC" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </g>
 </svg>
