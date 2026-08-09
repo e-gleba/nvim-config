@@ -80,9 +80,11 @@ local engines = {
     { '<leader>sR', 'cppreference', 'Search cppreference' },
 }
 
-local keys = vim.iter(engines):map(function(e)
-    return { e[1], search(bookmarks[e[2]]), desc = e[3], mode = mode_nx }
-end):totable()
+local keys = vim.iter(engines)
+    :map(function(e)
+        return { e[1], search(bookmarks[e[2]]), desc = e[3], mode = mode_nx }
+    end)
+    :totable()
 
 vim.list_extend(keys, {
     {
