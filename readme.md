@@ -23,7 +23,7 @@ Android · iOS · Linux · Windows · macOS
 
 - **CMake-first C++ workflow** — configure, build, run, and test through native [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html)
 - **Full IDE stack** — clangd LSP, DAP debugging, Neotest, and Compiler Explorer integration
-- **Jira integration** — zero-auth commit prefixes from branch names, optional full board access
+- **Commit prefixes** — Jira-style issue keys auto-prepended from branch names, zero auth
 - **In-editor reference search** — cppreference, StackOverflow, GitHub, and AI search one keypress away
 - **Remote-ready** — persistent tmux + Neovim sessions over SSH ([master guide](docs/remote_development_master_guide.md))
 - **Reproducible** — locked plugins, stylua CI, and a prebuilt Docker image
@@ -100,9 +100,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 This config uses `cmake-tools.nvim` with native [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) support.
 
-## 🎫 Jira workflow
-
-### Zero-auth commit prefix (always active)
+## 🎫 Commit prefixes
 
 On `git commit`, if your branch name contains a Jira-style key (e.g. `feature/PROJ-123-fix`), the commit buffer is auto-prepended with `PROJ-123: `. Cursor lands right after the colon — no auth, no API, works offline.
 
@@ -113,29 +111,6 @@ feature/PROJ-123-description
 bugfix/PROJ-456-fix
 PROJ-789-quick-patch
 ```
-
-### Full Jira integration (optional, requires auth)
-
-Set env vars before launching Neovim:
-
-```bash
-export JIRA_DOMAIN=yourcompany.atlassian.net
-export JIRA_USER=your-email@company.com
-export JIRA_API_TOKEN=your-api-token
-```
-
-Get your API token: [id.atlassian.com → Security → API tokens](https://id.atlassian.com/manage-profile/security/api-tokens).
-
-Then inside Neovim:
-
-```vim
-:Jira auth login                    " authenticate
-:Jira <PROJECT_KEY>                 " open sprint board
-:Jira info <ISSUE_KEY>              " view issue details
-:Jira create <PROJECT_KEY>          " create new issue
-```
-
-Board and issue info are also on `<leader>jj` and `<leader>ji`. The plugin only loads when `JIRA_DOMAIN` is present; otherwise it stays invisible and costs zero startup time.
 
 ## ⌨️ Keymaps
 
