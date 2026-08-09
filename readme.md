@@ -22,7 +22,7 @@ Android · iOS · Linux · Windows · macOS
 ## ✨ Features
 
 - **CMake-first C++ workflow** — configure, build, run, and test through native [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html)
-- **Full IDE stack** — clangd LSP, DAP debugging, Neotest, and Compiler Explorer integration
+- **Full IDE stack** — clangd LSP, DAP debugging, and Neotest
 - **In-editor reference search** — cppreference, StackOverflow, GitHub, and AI search one keypress away
 - **Remote-ready** — persistent tmux + Neovim sessions over SSH ([master guide](docs/remote_development_master_guide.md))
 - **Reproducible** — locked plugins, stylua CI, and a prebuilt Docker image
