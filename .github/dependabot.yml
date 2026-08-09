@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://json.schemastore.org/dependabot-2.0.json
+version: 2
+
+updates:
+  # ─── GitHub Actions ────────────────────────────────────────────────────────
+  # Keep CI/CD actions up to date (checkout, setup-qemu-action, setup-buildx-action,
+  # login-action, metadata-action, build-push-action, etc.)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # ─── Dockerfile tool versions ─────────────────────────────────────────────
+  # Tool versions are pinned as ARGs in the Dockerfile (neovim, lazygit, stylua).
+  # Dependabot's docker ecosystem only handles FROM images, so Renovate covers
+  # the ARG pins instead. See .github/renovate.json5.
