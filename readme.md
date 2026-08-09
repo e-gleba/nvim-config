@@ -67,7 +67,7 @@ nvim
 > [!WARNING]
 > Do not install Neovim nightly on macOS — it causes file-reload freezes. See [LazyVim #1581](https://github.com/LazyVim/LazyVim/issues/1581).
 
-### Docker (Linux x86_64)
+### Docker (Linux amd64 + arm64)
 
 ```bash
 docker run -it --rm \
