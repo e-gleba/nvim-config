@@ -11,9 +11,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     })
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
-            { 'Failed to clone lazy.nvim:\\n', 'ErrorMsg' },
+            { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
             { out, 'WarningMsg' },
-            { '\\nPress any key to exit...' },
+            { '\nPress any key to exit...' },
         }, true, {})
         vim.fn.getchar()
         os.exit(1)
@@ -23,25 +23,14 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
 vim.g.mapleader = ' '
-vim.g.maplocalleader = '\\\\'
+vim.g.maplocalleader = '\\'
 
 require('lazy').setup({
     spec = {
-        -- add LazyVim and import its plugins
+        -- LazyVim core. Extras are imported automatically from lazyvim.json;
+        -- manage them with `:LazyExtras` (single source of truth).
         { 'LazyVim/LazyVim', import = 'lazyvim.plugins' },
-
-        -- C++ / CMake language support (LSP + DAP + build tooling)
-        { import = 'lazyvim.plugins.extras.lang.clangd' },
-        { import = 'lazyvim.plugins.extras.lang.cmake' },
-        { import = 'lazyvim.plugins.extras.lang.tex' },
-
-        -- DAP / Test / Editor IDE modules
-        { import = 'lazyvim.plugins.extras.dap.core' },
-        { import = 'lazyvim.plugins.extras.test.core' },
-        { import = 'lazyvim.plugins.extras.editor.aerial' },
-        { import = 'lazyvim.plugins.extras.editor.inc-rename' },
 
         -- import/override with your plugins
         { import = 'plugins' },
@@ -53,10 +42,23 @@ require('lazy').setup({
         -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
         -- have outdated releases, which may break your Neovim install.
         version = false, -- always use the latest git commit
-        -- version = \"*\", -- try installing the latest stable version for plugins that support semver
     },
-    install = {},
+    install = { colorscheme = { 'tokyonight', 'habamax' } },
     checker = {
         enabled = true, -- check for plugin updates periodically
-    }, -- automatically check for plugin updates
+    },
+    performance = {
+        rtp = {
+            disabled_plugins = {
+                'gzip',
+                'matchit',
+                'matchparen',
+                'netrwPlugin',
+                'tarPlugin',
+                'tohtml',
+                'tutor',
+                'zipPlugin',
+            },
+        },
+    },
 })
