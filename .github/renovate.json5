@@ -1,0 +1,98 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
+  extends: [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticPrefixFixDepsChoreOthers",
+    "group:monorepos",
+    "helpers:pinGitHubActionDigests"
+  ],
+
+  // ─── General ──────────────────────────────────────────────────────────────
+  timezone: "UTC",
+  schedule: ["before 8am on monday"],
+  prConcurrentLimit: 10,
+  prHourlyLimit: 3,
+  labels: ["dependencies"],
+  commitMessagePrefix: "chore(deps):",
+  commitMessageAction: "update",
+  commitMessageTopic: "{{depName}}",
+  commitMessageExtra: "to {{newValue}}",
+
+  // ─── Vulnerability alerts ─────────────────────────────────────────────────
+  vulnerabilityAlerts: {
+    enabled: true,
+    schedule: ["at any time"],
+    labels: ["dependencies", "security"]
+  },
+
+  // ─── GitHub Actions ───────────────────────────────────────────────────────
+  // Covers .github/workflows/*.yml — checkout, setup-qemu-action,
+  // setup-buildx-action, login-action, metadata-action, build-push-action.
+  "github-actions": {
+    enabled: true
+  },
+  packageRules: [
+    {
+      description: "Group all GitHub Actions bumps into one PR",
+      matchManagers: ["github-actions"],
+      groupName: "github-actions",
+      labels: ["dependencies", "github-actions"]
+    },
+    {
+      description: "Auto-merge patch and pin updates after CI passes",
+      matchUpdateTypes: ["patch", "pin"],
+      automerge: true,
+      automergeStrategy: "squash",
+      platformAutomerge: true
+    }
+  ],
+
+  // ─── Dockerfile ───────────────────────────────────────────────────────────
+  // The dockerfile manager (enabled by default) already tracks:
+  //   - FROM ubuntu:24.04             → docker datasource
+  //   - # syntax=docker/dockerfile:1  → docker datasource
+  // Tool versions are pinned as plain ARGs used in curl URLs, which the
+  // dockerfile manager cannot see — so we use regex customManagers.
+  //
+  // Tracked dependencies:
+  //   neovim   neovim/neovim          (ARG NEOVIM_VERSION)
+  //   lazygit  jesseduffield/lazygit  (ARG LAZYGIT_VERSION)
+  //   stylua   JohnnyMorganz/StyLua   (ARG STYLUA_VERSION)
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Update Neovim version pinned in the Dockerfile",
+      managerFilePatterns: ["/(^|/)Dockerfile$/"],
+      matchStrings: [
+        "ARG\\s+NEOVIM_VERSION=(?<currentValue>[^\\s#]+)"
+      ],
+      depNameTemplate: "neovim/neovim",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^v?(?<version>.+)$"
+    },
+    {
+      customType: "regex",
+      description: "Update lazygit version pinned in the Dockerfile",
+      managerFilePatterns: ["/(^|/)Dockerfile$/"],
+      matchStrings: [
+        "ARG\\s+LAZYGIT_VERSION=(?<currentValue>[^\\s#]+)"
+      ],
+      depNameTemplate: "jesseduffield/lazygit",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^v?(?<version>.+)$"
+    },
+    {
+      customType: "regex",
+      description: "Update StyLua version pinned in the Dockerfile",
+      managerFilePatterns: ["/(^|/)Dockerfile$/"],
+      matchStrings: [
+        "ARG\\s+STYLUA_VERSION=(?<currentValue>[^\\s#]+)"
+      ],
+      depNameTemplate: "JohnnyMorganz/StyLua",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^v?(?<version>.+)$"
+    }
+  ]
+}
