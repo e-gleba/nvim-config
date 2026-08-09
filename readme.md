@@ -23,7 +23,7 @@ Android · iOS · Linux · Windows · macOS
 
 - **CMake-first C++ workflow** — configure, build, run, and test through native [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html)
 - **Full IDE stack** — clangd LSP, DAP debugging, Neotest, and Compiler Explorer integration
-- **Commit prefixes** — Jira-style issue keys auto-prepended from branch names, zero auth
+- **Commit prefixes** — git hook + editor autocmd prepend Jira-style issue keys from branch names, zero auth
 - **In-editor reference search** — cppreference, StackOverflow, GitHub, and AI search one keypress away
 - **Remote-ready** — persistent tmux + Neovim sessions over SSH ([master guide](docs/remote_development_master_guide.md))
 - **Reproducible** — locked plugins, stylua CI, and a prebuilt Docker image
@@ -102,7 +102,20 @@ This config uses `cmake-tools.nvim` with native [CMake Presets](https://cmake.or
 
 ## 🎫 Commit prefixes
 
-On `git commit`, if your branch name contains a Jira-style key (e.g. `feature/PROJ-123-fix`), the commit buffer is auto-prepended with `PROJ-123: `. Cursor lands right after the colon — no auth, no API, works offline.
+**Git hook (recommended — works in lazygit, terminal, any frontend).**
+`hooks/prepare-commit-msg` prepends `PROJ-123: ` to every commit message when the branch name contains a Jira-style key. Zero auth, zero API, works offline. Enable once:
+
+```bash
+chmod +x ~/.config/nvim/hooks/prepare-commit-msg
+git config --global core.hooksPath ~/.config/nvim/hooks
+```
+
+On Windows, run the `git config` line in Git Bash (`chmod` is unnecessary there).
+
+> [!WARNING]
+> A global `core.hooksPath` replaces per-repo `.git/hooks` (e.g. the `pre-commit` framework). If a project ships its own hooks, copy `hooks/prepare-commit-msg` into that repo's `.git/hooks/` instead of setting the global path.
+
+**Neovim autocmd (fallback for editor commits).** When Neovim is the commit editor and the hook is not installed, the autocmd in `lua/config/autocmds.lua` does the same and places the cursor after the colon. If the hook already prefixed the message, the autocmd steps aside.
 
 Supported branch patterns:
 

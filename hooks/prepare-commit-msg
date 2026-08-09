@@ -1,0 +1,5 @@
+#!/bin/sh
+# Git runs hooks by exact name via sh; the logic lives in the Lua file.
+# `nvim -l` is guaranteed present (this is an nvim config) and runs the
+# script without loading user config, so one commit pays ~50ms at most.
+exec nvim -l "$(dirname "$0")/prepare_commit_message.lua" "$@"
