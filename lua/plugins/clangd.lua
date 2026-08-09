@@ -1,3 +1,8 @@
+-- Scale clangd workers with the machine: half the logical cores, clamped to
+-- [2, 8]. Workstations index fast; laptops stay cool and responsive.
+local cores = vim.uv.available_parallelism()
+local jobs = math.max(2, math.min(8, math.floor(cores / 2)))
+
 ---@type LazyPluginSpec[]
 return {
     -- Disable the unmaintained p00f fork bundled by LazyVim's `lang.clangd` extra.
@@ -17,22 +22,22 @@ return {
         opts = {
             ast = {
                 role_icons = {
-                    type = '',
-                    declaration = '',
-                    expression = '',
-                    specifier = '',
-                    statement = '',
-                    ['template argument'] = '',
+                    type = '',
+                    declaration = '',
+                    expression = '',
+                    specifier = '',
+                    statement = '',
+                    ['template argument'] = '',
                 },
                 kind_icons = {
-                    compound = '',
-                    recovery = '',
-                    translation_unit = '',
-                    pack_expansion = '',
-                    template_type_parm = '',
-                    template_non_type_parm = '',
-                    template_template_parm = '',
-                    template_param_object = '',
+                    compound = '',
+                    recovery = '',
+                    translation_unit = '',
+                    pack_expansion = '',
+                    template_type_parm = '',
+                    template_non_type_parm = '',
+                    template_template_parm = '',
+                    template_param_object = '',
                 },
                 highlights = {
                     detail = 'Comment',
@@ -47,42 +52,21 @@ return {
         },
     },
 
-    -- Hardened clangd server flags.
-    --
-    -- The defaults bundled by LazyVim (and most copy-pasted configs) include
-    -- obsolete / crash-prone flags that cause instability on large C++ codebases
-    -- (especially on Windows with unity builds or non-unity builds). This override
-    -- replaces them with a minimal, conservative set that maximises stability.
-    --
-    -- Rationale for each flag:
-    --
-    --  * --background-index        : incremental index, required for workspace symbols.
-    --  * --background-index-priority=low : keep clangd polite while indexing.
-    --  * --clang-tidy              : inline linting via .clang-tidy config.
-    --  * --header-insertion=iwyu   : only insert headers that are actually used.
-    --  * --header-insertion-decorators : mark auto-inserted headers with // IWYU pragma.
-    --  * --all-scopes-completion   : complete symbols from all scopes, not just current.
-    --  * --completion-style=detailed : show signature help in completion items.
-    --  * --function-arg-placeholders : insert <#arg#> placeholders on completion.
-    --  * --fallback-style=llvm     : default formatting style when no .clang-format exists.
-    --  * --log=error               : suppress noisy info spam in :LspLog.
-    --  * --j=4                     : cap background-index threads to avoid starving
-    --                                 the OS scheduler on 8+ core machines.
+    -- Hardened clangd server flags: a minimal, conservative set replacing the
+    -- obsolete / crash-prone defaults bundled by LazyVim and most configs.
+    -- Workers scale with the machine (`jobs` above); low priority keeps the
+    -- background index polite on laptops.
     --
     -- Removed (do NOT add back):
-    --  * --cross-file-rename       : obsolete since clangd 18+, causes init errors.
+    --  * --cross-file-rename       : obsolete since clangd 18+, init errors.
     --  * --experimental-modules-support : known crash trigger.
     --                                 https://github.com/clangd/clangd/issues/2392
     --  * --pch-storage=memory      : see above.
     --
-    -- Windows-specific: add --query-driver pointing to your real compiler
-    -- (MinGW g++.exe, MSVC cl.exe, etc.) so clangd can discover system includes.
-    -- https://github.com/clangd/clangd/discussions/2489
-    --
-    -- Example MinGW64:
-    --   "--query-driver=C:/msys64/mingw64/bin/g++.exe,C:/msys64/mingw64/bin/clang++.exe"
-    -- Example MSVC:
-    --   "--query-driver=C:/Program Files/.../Hostx64/x64/cl.exe"
+    -- Windows: add --query-driver pointing at your real compiler so clangd can
+    -- discover system includes. https://github.com/clangd/clangd/discussions/2489
+    --   MinGW64: --query-driver=C:/msys64/mingw64/bin/g++.exe
+    --   MSVC:    --query-driver=C:/Program Files/.../Hostx64/x64/cl.exe
     {
         'https://github.com/neovim/nvim-lspconfig.git',
         opts = {
@@ -100,13 +84,12 @@ return {
                         '--function-arg-placeholders',
                         '--fallback-style=llvm',
                         '--log=error',
-                        '-j=4',
+                        '-j=' .. jobs,
                     },
                     init_options = {
                         clangdFileStatus = true,
                         usePlaceholders = true,
                         completeUnimported = true,
-                        semanticHighlighting = true,
                         fallbackFlags = { '-std=c++23' },
                     },
                 },
