@@ -1,3 +1,21 @@
+-- lhs -> { command, label } for the 5 hub commands with default shortcuts.
+-- https://github.com/iamironz/android-nvim-plugin/blob/main/docs/reference/keymaps.md
+local hub = {
+    { '<leader>am', 'AndroidMenu', 'Menu' },
+    { '<leader>at', 'AndroidTargets', 'Targets' },
+    { '<leader>ao', 'AndroidTools', 'Tools' },
+    { '<leader>aa', 'AndroidActions', 'Actions' },
+    { '<leader>ab', 'AndroidBuild', 'Build' },
+}
+
+---@type LazyKeysSpec[]
+local keys = vim.iter(hub)
+    :map(function(k)
+        return { k[1], '<cmd>' .. k[2] .. '<cr>', desc = 'Android: ' .. k[3] }
+    end)
+    :totable()
+
+---@type LazyPluginSpec[]
 return {
     {
         -- IDE-level Android/iOS/KMP/JVM workflows in Neovim: build, deploy,
@@ -23,25 +41,24 @@ return {
         end,
 
         -- Load on first Android command, or when opening Gradle-ecosystem files.
+        -- Mirrors upstream's documented 13-command surface (5 hub + 8 direct).
         cmd = {
             'AndroidMenu',
-            'AndroidRun',
-            'AndroidRunStop',
-            'AndroidBuild',
-            'AndroidBuildPrompt',
-            'AndroidBuildAssemble',
-            'AndroidLogcat',
-            'AndroidStop',
-            'AndroidSelectDevice',
-            'AndroidSelectModule',
             'AndroidTargets',
             'AndroidTools',
             'AndroidActions',
+            'AndroidBuild',
+            'AndroidRun',
+            'AndroidRunStop',
+            'AndroidLogcat',
+            'AndroidBuildPrompt',
+            'AndroidBuildAssemble',
             'AndroidGradleTasks',
             'AndroidIOSBuild',
             'AndroidIOSDeploy',
         },
         ft = { 'java', 'kotlin', 'groovy' },
+        keys = keys,
 
         ---@type android.Opts
         opts = {
@@ -57,7 +74,7 @@ return {
                 autosave = true,
                 restore_logcat = true,
             },
-            -- Disable upstream keymaps so lazy.nvim owns them (see `keys`).
+            -- Disabled: lazy.nvim owns the default shortcuts (see `keys`).
             keymaps = { enabled = false },
         },
     },
