@@ -8,15 +8,13 @@
 -- Howto:   https://github.com/Civitasv/cmake-tools.nvim/blob/main/docs/howto.md
 -- Issues:  https://github.com/Civitasv/cmake-tools.nvim/issues
 
-local M = {}
-
 ---@class CMakeMapping
 ---@field [1] string suffix
 ---@field [2] string command
 ---@field [3] string label
 
 ---@type CMakeMapping[]
-M.mappings = {
+local mappings = {
     { 'g', 'CMakeGenerate', 'Generate' },
     { 'b', 'CMakeBuild', 'Build' },
     { 'r', 'CMakeRun', 'Run' },
@@ -36,44 +34,31 @@ M.mappings = {
     { 'f', 'CMakeShowTargetFiles', 'Target Files' },
 }
 
----@return LazyKeysSpec[]
-function M.build_keys()
-    return vim.iter(M.mappings)
-        :map(function(m)
-            return {
-                '<leader>ck' .. m[1],
-                '<cmd>' .. m[2] .. '<cr>',
-                desc = 'CMake: ' .. m[3],
-            }
-        end)
-        :totable()
-end
+---@type LazyKeysSpec[]
+local keys = vim.iter(mappings)
+    :map(function(m)
+        return {
+            '<leader>ck' .. m[1],
+            '<cmd>' .. m[2] .. '<cr>',
+            desc = 'CMake: ' .. m[3],
+        }
+    end)
+    :totable()
+
+---@type string[]
+local commands = vim.iter(mappings)
+    :map(function(m)
+        return m[2]
+    end)
+    :totable()
 
 ---@type LazyPluginSpec[]
 return {
     {
         'https://github.com/Civitasv/cmake-tools.nvim.git',
         ft = { 'cmake', 'c', 'cpp', 'objc', 'objcpp' },
-        cmd = {
-            'CMakeGenerate',
-            'CMakeBuild',
-            'CMakeRun',
-            'CMakeDebug',
-            'CMakeClean',
-            'CMakeStop',
-            'CMakeSelectConfigurePreset',
-            'CMakeSelectBuildPreset',
-            'CMakeSelectBuildTarget',
-            'CMakeSelectLaunchTarget',
-            'CMakeSelectBuildType',
-            'CMakeSelectKit',
-            'CMakeOpen',
-            'CMakeClose',
-            'CMakeSettings',
-            'CMakeTest',
-            'CMakeShowTargetFiles',
-        },
-        keys = M.build_keys(),
+        cmd = commands,
+        keys = keys,
         dependencies = { 'https://github.com/nvim-lua/plenary.nvim.git' },
         opts = {
             cmake_command = 'cmake',
@@ -81,7 +66,7 @@ return {
             cmake_regenerate_on_save = true,
             cmake_compile_commands_options = {
                 action = 'soft_link',
-                target = vim.uv and vim.uv.cwd() or vim.loop.cwd(),
+                target = vim.uv.cwd(),
             },
             cmake_virtual_text_support = true,
             cmake_dap_configuration = {
