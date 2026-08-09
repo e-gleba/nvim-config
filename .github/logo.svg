@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <title>Sunset cocktail — nvim-config</title>
+  <title>Lazy sunset — nvim-config</title>
   <defs>
     <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#7C3AED"/>
@@ -12,10 +12,9 @@
   </defs>
   <g clip-path="url(#icon)">
     <rect width="512" height="512" fill="url(#sunset)"/>
-    <circle cx="256" cy="230" r="130" fill="#FFEDD5" opacity="0.18"/>
-    <circle cx="256" cy="230" r="90" fill="#FFEDD5"/>
-    <path d="M158 206 L256 314 L354 206 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="20" stroke-linejoin="round"/>
-    <rect x="248" y="306" width="16" height="96" rx="8" fill="#FFFFFF"/>
-    <rect x="192" y="398" width="128" height="18" rx="9" fill="#FFFFFF"/>
+    <circle cx="256" cy="208" r="135" fill="#FFEDD5" opacity="0.18"/>
+    <circle cx="256" cy="208" r="95" fill="#FFEDD5"/>
+    <rect x="276" y="282" width="34" height="96" rx="17" fill="#FFEDD5"/>
+    <circle cx="293" cy="414" r="16" fill="#FFEDD5"/>
   </g>
 </svg>
