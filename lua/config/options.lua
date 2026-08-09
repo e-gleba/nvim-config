@@ -15,50 +15,27 @@ opt.modeline = false
 opt.modelines = 0
 opt.fileformats = 'unix,dos'
 opt.fileformat = 'unix'
-opt.fixendofline = true
 
 -- Indentation ----------------------------------------------------------------
 opt.textwidth = 80
 opt.shiftwidth = 4
 opt.tabstop = 4
 opt.softtabstop = 4
-opt.expandtab = true
-opt.wrap = false
-opt.smartindent = true
 opt.cindent = true
 opt.cinoptions = ':0,l1,g0,t0,(0,W4'
 
 -- Gutter ---------------------------------------------------------------------
 opt.signcolumn = 'yes:2'
-opt.number = true
-opt.relativenumber = true
-opt.cursorline = true
 opt.colorcolumn = '81,121'
 
--- Search ---------------------------------------------------------------------
-opt.ignorecase = true
-opt.smartcase = true
-opt.hlsearch = true
-opt.incsearch = true
-
--- Split behavior -------------------------------------------------------------
-opt.splitright = true
-opt.splitbelow = true
-
--- Scrolling / performance ----------------------------------------------------
+-- Scrolling ------------------------------------------------------------------
 opt.scrolloff = 8
-opt.sidescrolloff = 8
-opt.lazyredraw = false -- disabled; interferes with modern plugins
-opt.ttyfast = true
 
 -- Completion -----------------------------------------------------------------
-opt.completeopt = 'menu,menuone,noselect'
 opt.pumheight = 15
 
--- Backup / undo / swap -------------------------------------------------------
-opt.undofile = true
+-- Backup / swap ---------------------------------------------------------------
 opt.swapfile = false
-opt.backup = false
 opt.writebackup = false
 
 -- Python tooling (LazyVim lang.python extras) --------------------------------
