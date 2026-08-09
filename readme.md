@@ -14,7 +14,6 @@ Android · iOS · Linux · Windows · macOS
 <p>
   <a href="https://www.lazyvim.org">LazyVim Docs</a> ·
   <a href="https://neovim.io/doc/">Neovim Docs</a> ·
-  <a href="https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html">CMake Presets</a> ·
   <a href="docs/remote_development_master_guide.md">Remote Dev Guide</a>
 </p>
 
