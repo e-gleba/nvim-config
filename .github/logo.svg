@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Sunset cocktail — nvim-config</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#231A4E"/>
+      <stop offset="0.3" stop-color="#5E2A68"/>
+      <stop offset="0.55" stop-color="#A83368"/>
+      <stop offset="0.75" stop-color="#E04E5F"/>
+      <stop offset="0.9" stop-color="#FF8A5C"/>
+      <stop offset="1" stop-color="#FFB86B"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFE9A8"/>
+      <stop offset="0.55" stop-color="#FFB75C"/>
+      <stop offset="1" stop-color="#FF7E5F"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFD98A" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#FFD98A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4A2E7A"/>
+      <stop offset="1" stop-color="#22184A"/>
+    </linearGradient>
+    <linearGradient id="drink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC15E"/>
+      <stop offset="1" stop-color="#FF5E78"/>
+    </linearGradient>
+    <linearGradient id="reflection" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC15E" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFC15E" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="badge">
+      <rect x="16" y="16" width="480" height="480" rx="110"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#badge)">
+    <rect x="16" y="16" width="480" height="480" fill="url(#sky)"/>
+    <circle cx="256" cy="240" r="150" fill="url(#glow)"/>
+    <circle cx="256" cy="240" r="95" fill="url(#sun)"/>
+
+    <path d="M16 312 Q96 288 176 312 T336 312 T496 312 L496 496 L16 496 Z" fill="url(#ocean)"/>
+    <path d="M16 344 Q96 322 176 344 T336 344 T496 344 L496 496 L16 496 Z" fill="#2C1E57" opacity="0.85"/>
+    <path d="M16 376 Q96 356 176 376 T336 376 T496 376 L496 496 L16 496 Z" fill="#20163F" opacity="0.9"/>
+    <ellipse cx="256" cy="336" rx="34" ry="64" fill="url(#reflection)"/>
+
+    <line x1="306" y1="300" x2="334" y2="192" stroke="#FF6B81" stroke-width="11" stroke-linecap="round"/>
+
+    <path d="M156 252 C156 312 200 340 256 340 C312 340 356 312 356 252 Z" fill="#FFFFFF" fill-opacity="0.08"/>
+    <path d="M172 260 C172 306 210 330 256 330 C302 330 340 306 340 260 Z" fill="url(#drink)"/>
+    <rect x="222" y="272" width="32" height="32" rx="8" transform="rotate(14 238 288)" fill="#FFFFFF" opacity="0.32"/>
+    <path d="M156 252 C156 312 200 340 256 340 C312 340 356 312 356 252 M156 252 L356 252" fill="none" stroke="#FFF6EA" stroke-width="7" stroke-linecap="round"/>
+    <line x1="256" y1="340" x2="256" y2="402" stroke="#FFF6EA" stroke-width="7" stroke-linecap="round"/>
+    <ellipse cx="256" cy="408" rx="52" ry="9" fill="none" stroke="#FFF6EA" stroke-width="7"/>
+
+    <circle cx="362" cy="240" r="27" fill="#FFB84D" stroke="#FF8A3D" stroke-width="6"/>
+    <g stroke="#FFE3B3" stroke-width="3" stroke-linecap="round">
+      <line x1="362" y1="222" x2="362" y2="258"/>
+      <line x1="344" y1="240" x2="380" y2="240"/>
+      <line x1="349" y1="227" x2="375" y2="253"/>
+      <line x1="375" y1="227" x2="349" y2="253"/>
+    </g>
+
+    <path d="M118 96 Q122 118 144 122 Q122 126 118 148 Q114 126 92 122 Q114 118 118 96 Z" fill="#FFE9C9" opacity="0.9"/>
+    <path d="M404 128 Q407 143 422 146 Q407 149 404 164 Q401 149 386 146 Q401 143 404 128 Z" fill="#FFE9C9" opacity="0.7"/>
+
+    <ellipse cx="150" cy="100" rx="190" ry="120" fill="#FFFFFF" opacity="0.06"/>
+  </g>
+  <rect x="16" y="16" width="480" height="480" rx="110" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="2"/>
+</svg>
