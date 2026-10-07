@@ -99,6 +99,23 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 This config uses `cmake-tools.nvim` with native [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) support.
 
+## ⚡ Most useful
+
+Press `<leader>` and follow the which-key groups. Starting points:
+
+| Keys | What |
+|------|------|
+| `<leader>oa` / `<leader>os` | Ask OpenCode about cursor context / open action picker |
+| `go` + motion | Send range to OpenCode (dot-repeatable) |
+| `<leader>ckp` → `<leader>ckg` → `<leader>ckb` | Pick preset → generate → build |
+| `<leader>ckd` | Debug active target via codelldb |
+| `<leader>bj` | Pick buffer by letter hint |
+| `s` | Flash jump (Vimium-style labels) |
+| `<leader>sR` | Search cppreference for word under cursor |
+
+Mini-loop for CMake: preset, generate, build, debug — all under
+`<leader>ck`. Full maps live in code; which-key is the reference.
+
 ## ⌨️ Keymaps
 
 Keymaps are declared in `lua/config/keymaps.lua` and individual plugin specs. Discover them in-editor via which-key — press `<leader>` and follow the groups. The code is the source of truth; this file intentionally does not duplicate it.
