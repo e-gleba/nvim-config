@@ -1,0 +1,31 @@
+{
+    // OpenCode project config for nvim-config (LazyVim-based Neovim setup).
+    // Merged over ~/.config/opencode/opencode.json; safe to commit.
+    // Schema: https://opencode.ai/config.json
+    // Docs: https://opencode.ai/docs/config/
+    "$schema": "https://opencode.ai/config.json",
+    // AGENTS.md is read natively; only extras are listed here.
+    // Upstream references live in readme.md: https://www.lazyvim.org,
+    // https://neovim.io/doc/
+    "instructions": [
+        "docs/**/*.md"
+    ],
+    // MCP servers, all keyless. Kept lean on purpose: every server adds
+    // context on every call (https://opencode.ai/docs/mcp-servers/#caveats).
+    "mcp": {
+        // Upstream library docs: LazyVim, lazy.nvim, Neovim API, conform,
+        // cmake-tools, ... Prompt with `use context7`.
+        // Key optional, raises rate limits: https://github.com/upstash/context7
+        "context7": {
+            "type": "remote",
+            "url": "https://mcp.context7.com/mcp"
+        },
+        // GitHub code examples for unfamiliar APIs.
+        // Prompt with `use the gh_grep tool`. https://grep.app
+        "gh_grep": {
+            "type": "remote",
+            "url": "https://mcp.grep.app"
+        }
+    },
+    "formatter": true
+}

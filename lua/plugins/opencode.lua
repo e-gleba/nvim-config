@@ -1,15 +1,16 @@
 -- opencode.nvim :: OpenCode pairing inside Neovim.
--- Keeps you in your flow: inject cursor/selection/buffer context, prompt
--- OpenCode, review its edits — no separate TUI round-trip.
+-- Inject cursor/selection context, prompt, review edits — no TUI round-trip.
 --
 -- Plugin: https://github.com/nickjvandyke/opencode.nvim
 -- Health: `:checkhealth opencode`
+
+-- snacks.nvim is LazyVim core (eager), so no `dependencies` entry needed.
+local term_opts = { win = { position = 'right', enter = false } }
 
 ---@type LazyPluginSpec[]
 return {
     {
         'nickjvandyke/opencode.nvim',
-        dependencies = { 'folke/snacks.nvim' },
         keys = {
             {
                 '<leader>oa',
@@ -38,10 +39,7 @@ return {
             {
                 '<leader>oo',
                 function()
-                    require('snacks.terminal').toggle(
-                        'opencode',
-                        { win = { position = 'right', enter = false } }
-                    )
+                    require('snacks.terminal').toggle('opencode', term_opts)
                 end,
                 mode = { 'n', 't' },
                 desc = 'Opencode: toggle terminal',
@@ -70,9 +68,7 @@ return {
             vim.g.opencode_opts = {
                 server = {
                     start = function()
-                        require('snacks.terminal').open('opencode', {
-                            win = { position = 'right', enter = false },
-                        })
+                        require('snacks.terminal').open('opencode', term_opts)
                     end,
                 },
             }
@@ -93,10 +89,51 @@ return {
         end,
     },
     {
+        -- Send snacks picker selection to opencode via `<a-o>`.
+        -- Ref: https://github.com/nickjvandyke/opencode.nvim#integrations
+        'folke/snacks.nvim',
+        opts = {
+            picker = {
+                win = {
+                    input = {
+                        keys = {
+                            ['<a-o>'] = {
+                                'opencode_send',
+                                mode = { 'n', 'i' },
+                            },
+                        },
+                    },
+                },
+                actions = {
+                    ---@param picker snacks.Picker
+                    opencode_send = function(picker)
+                        local items = vim.tbl_map(function(item)
+                            ---@param item snacks.picker.Item
+                            return item.file
+                                and require('opencode').format({
+                                    path = item.file,
+                                    from = item.pos,
+                                    to = item.end_pos,
+                                })
+                                or item.text
+                        end, picker:selected({ fallback = true }))
+                        require('opencode').prompt(
+                            table.concat(items, ', ') .. ' '
+                        )
+                    end,
+                },
+            },
+        },
+    },
+    {
         'folke/which-key.nvim',
         opts = {
             spec = {
-                { '<leader>o', group = 'Opencode' },
+                {
+                    '<leader>o',
+                    group = 'Opencode',
+                    icon = { icon = '󰚩 ', color = 'purple' },
+                },
             },
         },
     },
