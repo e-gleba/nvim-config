@@ -55,18 +55,23 @@ local commands = vim.iter(mappings)
 ---@type LazyPluginSpec[]
 return {
     {
-        'https://github.com/Civitasv/cmake-tools.nvim.git',
+        'Civitasv/cmake-tools.nvim',
         ft = { 'cmake', 'c', 'cpp', 'objc', 'objcpp' },
         cmd = commands,
         keys = keys,
-        dependencies = { 'https://github.com/nvim-lua/plenary.nvim.git' },
+        dependencies = { 'nvim-lua/plenary.nvim' },
         opts = {
             cmake_command = 'cmake',
             cmake_use_preset = true,
             cmake_regenerate_on_save = true,
+            cmake_generate_options = { '-DCMAKE_EXPORT_COMPILE_COMMANDS=1' },
             cmake_compile_commands_options = {
-                action = 'soft_link',
-                target = vim.uv.cwd(),
+                -- WHY: symlinks need privileges/Developer Mode on Windows,
+                -- so copy there; soft_link stays atomic elsewhere.
+                action = vim.fn.has('win32') == 1 and 'copy' or 'soft_link',
+                -- Function reference, not a call: resolved per configure,
+                -- so it follows the project cwd instead of startup cwd.
+                target = vim.uv.cwd,
             },
             cmake_virtual_text_support = true,
             cmake_dap_configuration = {
@@ -80,7 +85,7 @@ return {
         },
     },
     {
-        'https://github.com/folke/which-key.nvim.git',
+        'folke/which-key.nvim',
         opts = {
             spec = {
                 {
