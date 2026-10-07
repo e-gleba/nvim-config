@@ -1,8 +1,23 @@
---- Task runner for CMake presets, build targets and ctest jobs.
---- Replaces manual terminal invocations with a unified task panel.
---- Ref:
----   https://github.com/stevearc/overseer.nvim
+-- overseer.nvim :: task runner for presets, builds, ctest.
+-- Loads on first command; zero startup cost.
+--
+-- Plugin: https://github.com/stevearc/overseer.nvim
+
+---@type LazyPluginSpec[]
 return {
-    'stevearc/overseer.nvim',
-    opts = {},
+    {
+        'stevearc/overseer.nvim',
+        cmd = {
+            'OverseerOpen',
+            'OverseerClose',
+            'OverseerToggle',
+            'OverseerRun',
+            'OverseerRunCmd',
+            'OverseerBuild',
+            'OverseerQuickAction',
+            'OverseerTaskAction',
+            'OverseerInfo',
+        },
+        opts = {},
+    },
 }

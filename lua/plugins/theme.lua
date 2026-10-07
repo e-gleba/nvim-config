@@ -1,11 +1,14 @@
+-- tokyonight :: enforced light variant.
+-- Merges into LazyVim's colorscheme spec; deltas only.
+--
+-- Plugin: https://github.com/folke/tokyonight.nvim
+
+---@type LazyPluginSpec[]
 return {
-    -- 1. Configure the Tokyonight plugin to use the "day" style
     {
         'folke/tokyonight.nvim',
         lazy = false,
         priority = 1000,
-        opts = {
-            style = 'day', -- This enforces the light variant
-        },
+        opts = { style = 'day' },
     },
 }
