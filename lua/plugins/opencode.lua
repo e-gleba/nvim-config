@@ -1,26 +1,103 @@
-return {
-    'nickjvandyke/opencode.nvim',
-    -- Defaults to "main", supporting OpenCode v2.
-    -- Uncomment to pull the latest stable release, supporting OpenCode v1.
-    -- version = "*",
-    config = function()
-        ---@type opencode.Opts
-        vim.g.opencode_opts = {
-            -- Your configuration, if any; goto definition on the type for details
-        }
+-- opencode.nvim :: OpenCode pairing inside Neovim.
+-- Keeps you in your flow: inject cursor/selection/buffer context, prompt
+-- OpenCode, review its edits — no separate TUI round-trip.
+--
+-- Plugin: https://github.com/nickjvandyke/opencode.nvim
+-- Health: `:checkhealth opencode`
 
-        -- Recommended/example keymaps
-        vim.keymap.set({ 'n', 'x' }, '<C-a>', function()
-            require('opencode').ask('@this: ')
-        end, { desc = 'Ask OpenCode…' })
-        vim.keymap.set({ 'n', 'x' }, '<C-x>', function()
-            require('opencode').select()
-        end, { desc = 'Select OpenCode…' })
-        vim.keymap.set({ 'n', 'x' }, 'go', function()
-            return require('opencode').operator('@this')
-        end, { desc = 'Send range to OpenCode', expr = true })
-        vim.keymap.set({ 'n' }, 'goo', function()
-            return require('opencode').operator('@this') .. '_'
-        end, { desc = 'Send line to OpenCode', expr = true })
-    end,
+---@type LazyPluginSpec[]
+return {
+    {
+        'nickjvandyke/opencode.nvim',
+        dependencies = { 'folke/snacks.nvim' },
+        keys = {
+            {
+                '<leader>oa',
+                function()
+                    require('opencode').ask('@this: ')
+                end,
+                mode = { 'n', 'x' },
+                desc = 'Opencode: ask',
+            },
+            {
+                '<leader>os',
+                function()
+                    require('opencode').select()
+                end,
+                mode = { 'n', 'x' },
+                desc = 'Opencode: select',
+            },
+            {
+                '<leader>op',
+                function()
+                    require('opencode').prompt('@this')
+                end,
+                mode = { 'n', 'x' },
+                desc = 'Opencode: prompt',
+            },
+            {
+                '<leader>oo',
+                function()
+                    require('snacks.terminal').toggle(
+                        'opencode',
+                        { win = { position = 'right', enter = false } }
+                    )
+                end,
+                mode = { 'n', 't' },
+                desc = 'Opencode: toggle terminal',
+            },
+            {
+                'go',
+                function()
+                    return require('opencode').operator('@this')
+                end,
+                mode = { 'n', 'x' },
+                expr = true,
+                desc = 'Opencode: send range',
+            },
+            {
+                'goo',
+                function()
+                    return require('opencode').operator('@this') .. '_'
+                end,
+                mode = { 'n' },
+                expr = true,
+                desc = 'Opencode: send line',
+            },
+        },
+        config = function()
+            ---@type opencode.Opts
+            vim.g.opencode_opts = {
+                server = {
+                    start = function()
+                        require('snacks.terminal').open('opencode', {
+                            win = { position = 'right', enter = false },
+                        })
+                    end,
+                },
+            }
+
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'OpencodeEvent:session.execution.started',
+                callback = function()
+                    local win = require('snacks.terminal').get(
+                        'opencode',
+                        { create = false }
+                    )
+                    if win then
+                        win:show()
+                    end
+                end,
+                desc = 'Opencode: reveal terminal on execution',
+            })
+        end,
+    },
+    {
+        'folke/which-key.nvim',
+        opts = {
+            spec = {
+                { '<leader>o', group = 'Opencode' },
+            },
+        },
+    },
 }
